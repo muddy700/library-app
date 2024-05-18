@@ -1,9 +1,9 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Task } from "../types";
 import { Success } from "../../../shared/types";
-import * as apiService from "../../../shared/services/api.service";
 import { UpdateTaskDto } from "../payloads";
 import { Loader } from "../../../shared/components";
+import { apiService } from "../../../shared/services";
 
 type UpdateTaskFormProps = {
 	toggleUpdateTaskForm: (value: boolean) => void;

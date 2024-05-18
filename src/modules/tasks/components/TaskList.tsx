@@ -5,8 +5,10 @@ import { TaskDetails } from "./TaskDetails";
 import { TaskForm } from "./TaskForm";
 import { Loader, SuccessBanner } from "../../../shared/components";
 import { UpdateTaskForm } from "./UpdateTaskForm";
-import * as apiService from "../../../shared/services/api.service";
 import { Success } from "../../../shared/types";
+import { apiService } from "../../../shared/services";
+import { Button } from "@material-tailwind/react";
+import { PlusIcon } from "@heroicons/react/24/solid";
 
 export const TaskList = () => {
 	const [tasks, setTasks] = useState<BaseTask[]>([]);
@@ -96,9 +98,10 @@ export const TaskList = () => {
 
 			{/* Create new task button */}
 			{!isDeleting && (
-				<button className="bg-blue-300 py-1 rounded-md font-bold hover:bg-blue-400 my-3" onClick={() => setShowTaskForm(true)}>
-					New Task
-				</button>
+				<Button className="bg-primary-600 py-1 rounded-md font-bold hover:bg-primary-700 text-black/60 my-3 flex place-items-center justify-center gap-3" onClick={() => setShowTaskForm(true)}>
+					<PlusIcon className="h-5 w-5 " />
+					<span> New Task</span>{" "}
+				</Button>
 			)}
 
 			{/* Todos list */}
