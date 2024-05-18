@@ -19,7 +19,7 @@ export const TaskList = () => {
 	const [hoveredTask, setHoveredTask] = useState<number>(0);
 
 	const fetchTasks = async () => {
-		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 3 });
+		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 10 });
 		if (response) setTasks(response.items);
 	};
 
