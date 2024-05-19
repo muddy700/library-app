@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { BaseTask } from "../types";
-import { TaskRow } from "./TaskRow";
 import { TaskDetails } from "./TaskDetails";
 import { TaskForm } from "./TaskForm";
-import { Loader, SuccessBanner } from "../../../shared/components";
+import { DataTable, Loader, SuccessBanner } from "@lims/shared/components";
 import { UpdateTaskForm } from "./UpdateTaskForm";
-import { Success } from "../../../shared/types";
-import { apiService } from "../../../shared/services";
-import { Button } from "@material-tailwind/react";
+import { Success, TableColumn } from "@lims/shared/types";
+import { apiService } from "@lims/shared/services";
+import { Button, Typography } from "@material-tailwind/react";
 import { PlusIcon } from "@heroicons/react/24/solid";
 
 export const TaskList = () => {
@@ -18,7 +17,11 @@ export const TaskList = () => {
 	const [showUpdateTaskForm, setShowUpdateTaskForm] = useState<boolean>(false);
 	const [successResponse, setSuccessResponse] = useState<Success | undefined>();
 	const [isDeleting, setIsDeleting] = useState<boolean>(false);
-	const [hoveredTask, setHoveredTask] = useState<number>(0);
+
+	const tableColumns: TableColumn[] = [
+		{ label: "Title", fieldName: "title", dataType: "text" },
+		{ label: "Created At", fieldName: "createdAt", dataType: "date" },
+	];
 
 	const fetchTasks = async () => {
 		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 10 });
@@ -94,19 +97,21 @@ export const TaskList = () => {
 			{showUpdateTaskForm && activeTaskId && <UpdateTaskForm toggleUpdateTaskForm={setShowUpdateTaskForm} handleSuccess={setSuccessResponse} taskId={activeTaskId} />}
 
 			{/* Page Title */}
-			<div className="font-bold text-xl">Todos List({tasks.length})</div>
+			<Typography className="" variant="h4">
+				Todos List({tasks.length})
+			</Typography>
 
 			{/* Create new task button */}
 			{!isDeleting && (
-				<Button className="bg-primary-600 py-1 rounded-md font-bold hover:bg-primary-700 text-black/60 my-3 flex place-items-center justify-center gap-3" onClick={() => setShowTaskForm(true)}>
+				<Button className="flex justify-center items-center gap-3 bg-primary-600 hover:bg-primary-700 my-3" onClick={() => setShowTaskForm(true)}>
 					<PlusIcon className="h-5 w-5 " />
-					<span> New Task</span>{" "}
+					New Task
 				</Button>
 			)}
 
 			{/* Todos list */}
-			{!isDeleting && tasks.map((task: BaseTask) => <TaskRow key={task.id} taskInfo={task} eventHandler={handleTaskRowEvents} hoveredTask={hoveredTask} toggleHoveredTask={setHoveredTask} />)}
-
+			{!isDeleting && tasks && <DataTable<BaseTask> columns={tableColumns} data={tasks} eventHandler={handleTaskRowEvents} />}
+			
 			{/* Deletion Loader */}
 			{isDeleting && (
 				<div className="mt-6">
