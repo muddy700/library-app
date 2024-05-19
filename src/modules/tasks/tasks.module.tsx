@@ -1,7 +1,5 @@
 import { TaskList } from "./components";
 
-const TasksModule = () => {
+export const TasksModule = () => {
 	return <TaskList />;
 };
-
-export default TasksModule;

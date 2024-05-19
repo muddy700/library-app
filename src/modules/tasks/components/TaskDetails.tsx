@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Task } from "../types";
-import { Loader } from "../../../shared/components";
-import { Success } from "../../../shared/types";
-import { apiService } from "../../../shared/services";
+import { Loader } from "@lims/shared/components";
+import { Success } from "@lims/shared/types";
+import { apiService } from "@lims/shared/services";
 
 type TaskDetailsProps = {
 	taskId: number;

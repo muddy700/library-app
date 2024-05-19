@@ -5,3 +5,8 @@ export type { GlobalError } from "./GlobalError";
 export type { Success } from "./Success";
 export type { Validation } from "./Validation";
 export type { QueryParams } from "./QueryParams";
+export type { TableColumn } from "./TableColumn";
+export type { PrimaryData } from "./PrimaryData";
+export type { CreationData } from "./CreationData";
+export type { UpdationData } from "./UpdationData";
+export type { BaseData } from "./BaseData";

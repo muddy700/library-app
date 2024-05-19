@@ -1,7 +1,7 @@
 import React, { FormEvent, useState } from "react";
-import { Success } from "../../../shared/types";
+import { Success } from "@lims/shared/types";
 import { TaskDto } from "../payloads";
-import { apiService } from "../../../shared/services";
+import { apiService } from "@lims/shared/services";
 
 type TaskFormProps = {
 	toggleTaskForm: (value: boolean) => void;
