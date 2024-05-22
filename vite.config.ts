@@ -20,5 +20,6 @@ export default defineConfig({
 		alias: {
 			"@lims": path.resolve(__dirname, "./src"),
 		},
+		dedupe: ["react", "react-dom"],
 	},
 });
