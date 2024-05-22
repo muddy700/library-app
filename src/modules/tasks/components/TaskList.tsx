@@ -91,7 +91,7 @@ export const TaskList = () => {
 			{showTaskDetails && activeTaskId && <TaskDetails taskId={activeTaskId} toggleTaskDetails={setShowTaskDetails} handleSuccess={setSuccessResponse} onEdit={handleTaskEdition} />}
 
 			{/* Task Form */}
-			{showTaskForm && <TaskForm toggleTaskForm={setShowTaskForm} handleSuccess={setSuccessResponse} />}
+			{showTaskForm && <TaskForm toggleVisibility={setShowTaskForm} handleSuccess={setSuccessResponse} />}
 
 			{/* Update Task Form */}
 			{showUpdateTaskForm && activeTaskId && <UpdateTaskForm toggleUpdateTaskForm={setShowUpdateTaskForm} handleSuccess={setSuccessResponse} taskId={activeTaskId} />}

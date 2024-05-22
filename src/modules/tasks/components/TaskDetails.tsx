@@ -14,8 +14,8 @@ type TaskDetailsProps = {
 };
 
 export const TaskDetails = ({ taskId, toggleTaskDetails, handleSuccess, onEdit }: TaskDetailsProps) => {
-	const title = "Task Details";
-	const subTitle = `Details for Task with ID: ${taskId}`;
+	const title: string = "Task Details";
+	const subTitle: string = `Details for Task with ID: ${taskId}`;
 
 	const [taskInfo, setTaskInfo] = useState<Task>();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
