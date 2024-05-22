@@ -26,7 +26,13 @@ export const getById = async <T>(endpoint: string) => {
 		return handleError(error as AxiosError);
 	}
 };
-
+// TODO: Write description for each function as below
+/**
+ * @description some
+ * @param endpoint
+ * @param payload
+ * @returns
+ */
 export const post = async <T, D>(endpoint: string, payload: D) => {
 	try {
 		return (await axiosInstance.post<T, AxiosResponse<T, D>, D>(endpoint, payload)).data;

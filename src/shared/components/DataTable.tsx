@@ -1,9 +1,9 @@
 import { Card, IconButton, Typography } from "@material-tailwind/react";
 import { PrimaryData, TableColumn } from "../types";
-import { useState } from "react";
 import { TableHead } from "./TableHead";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import React from "react";
 
 type TableProps<T> = {
 	columns: TableColumn[];
@@ -14,8 +14,6 @@ type TableProps<T> = {
 };
 
 export const DataTable = <T extends PrimaryData>({ columns, data, hasSerialNumbers = true, hasActions = true, eventHandler }: TableProps<T>) => {
-	const [hoveredTask, setHoveredTask] = useState<number>(0);
-
 	return (
 		<Card className="h-full w-full overflow-scroll">
 			<table className="w-full min-w-max table-auto text-left">
@@ -27,9 +25,10 @@ export const DataTable = <T extends PrimaryData>({ columns, data, hasSerialNumbe
 						tdClasses += isLast ? "" : " border-b border-blue-gray-50";
 
 						return (
-							<tr key={rowIndex} onMouseEnter={() => setHoveredTask(dataRow.id)} onMouseLeave={() => setHoveredTask(0)} className="hover:shadow-xl hover:bg-secondary-200/50">
+							<tr key={rowIndex} className="hover:shadow-xl hover:bg-secondary-200/50">
 								{columns.map((column: TableColumn, columnIndex: number) => (
-									<>
+									// TODO: Each child in a list should have a unique "key" prop
+									<React.Fragment key={columnIndex}>
 										{/* S/No column */}
 										{hasSerialNumbers && columnIndex === 0 && (
 											<td className={tdClasses}>
@@ -49,8 +48,8 @@ export const DataTable = <T extends PrimaryData>({ columns, data, hasSerialNumbe
 										</td>
 
 										{/* Actions column */}
-										{hasActions && columnIndex === columns.length - 1 && hoveredTask === dataRow.id && (
-											<td className="">
+										{hasActions && columnIndex === columns.length - 1 && (
+											<td>
 												<IconButton variant="text" color="indigo" onClick={() => eventHandler(1, dataRow.id)}>
 													<EyeIcon className="h-5 w-5" />
 												</IconButton>
@@ -62,7 +61,7 @@ export const DataTable = <T extends PrimaryData>({ columns, data, hasSerialNumbe
 												</IconButton>
 											</td>
 										)}
-									</>
+									</React.Fragment>
 								))}
 							</tr>
 						);

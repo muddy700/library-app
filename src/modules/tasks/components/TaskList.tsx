@@ -86,7 +86,7 @@ export const TaskList = () => {
 		);
 
 	return (
-		<div className="grid place-content-center relative">
+		<div className="grid place-content-center">
 			{/* Task Details */}
 			{showTaskDetails && activeTaskId && <TaskDetails taskId={activeTaskId} toggleTaskDetails={setShowTaskDetails} handleSuccess={setSuccessResponse} onEdit={handleTaskEdition} />}
 
@@ -111,7 +111,7 @@ export const TaskList = () => {
 
 			{/* Todos list */}
 			{!isDeleting && tasks && <DataTable<BaseTask> columns={tableColumns} data={tasks} eventHandler={handleTaskRowEvents} />}
-			
+
 			{/* Deletion Loader */}
 			{isDeleting && (
 				<div className="mt-6">
