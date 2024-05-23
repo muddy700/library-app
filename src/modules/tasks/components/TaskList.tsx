@@ -16,7 +16,7 @@ export const TaskList = () => {
 	const [showTaskForm, setShowTaskForm] = useState<boolean>(false);
 	const [showUpdateTaskForm, setShowUpdateTaskForm] = useState<boolean>(false);
 	const [successResponse, setSuccessResponse] = useState<Success | undefined>();
-	const [isDeleting, setIsDeleting] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const tableColumns: TableColumn[] = [
 		{ label: "Title", fieldName: "title", dataType: "text" },
@@ -25,6 +25,8 @@ export const TaskList = () => {
 
 	const fetchTasks = async () => {
 		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 10 });
+
+		setIsLoading(false);
 		if (response) setTasks(response.items);
 	};
 
@@ -50,18 +52,19 @@ export const TaskList = () => {
 	};
 
 	const callHim = () => {
-		fetchTasks();
+		setIsLoading(true);
+		setTimeout(() => fetchTasks(), 1000);
 	};
 
 	useEffect(() => callHim(), []);
 
 	const handleTaskDeletion = (taskId: number): void => {
-		setIsDeleting(true);
+		setIsLoading(true);
 
 		setTimeout(async () => {
 			const response = await apiService.remove<Success>("/tasks/" + taskId);
 
-			setIsDeleting(false);
+			setIsLoading(false);
 			if (response) setSuccessResponse(response);
 		}, 1000);
 	};
@@ -94,15 +97,15 @@ export const TaskList = () => {
 			{showTaskForm && <TaskForm toggleVisibility={setShowTaskForm} handleSuccess={setSuccessResponse} />}
 
 			{/* Update Task Form */}
-			{showUpdateTaskForm && activeTaskId && <UpdateTaskForm toggleUpdateTaskForm={setShowUpdateTaskForm} handleSuccess={setSuccessResponse} taskId={activeTaskId} />}
+			{showUpdateTaskForm && activeTaskId && <UpdateTaskForm toggleVisibility={setShowUpdateTaskForm} handleSuccess={setSuccessResponse} taskId={activeTaskId} />}
 
 			{/* Page Title */}
-			<Typography className="" variant="h4">
+			<Typography className="text-center py-3" variant="h4">
 				Todos List({tasks.length})
 			</Typography>
 
 			{/* Create new task button */}
-			{!isDeleting && (
+			{!isLoading && (
 				<Button className="flex justify-center items-center gap-3 bg-primary-600 hover:bg-primary-700 my-3" onClick={() => setShowTaskForm(true)}>
 					<PlusIcon className="h-5 w-5 " />
 					New Task
@@ -110,14 +113,10 @@ export const TaskList = () => {
 			)}
 
 			{/* Todos list */}
-			{!isDeleting && tasks && <DataTable<BaseTask> columns={tableColumns} data={tasks} eventHandler={handleTaskRowEvents} />}
+			{!isLoading && tasks && <DataTable<BaseTask> columns={tableColumns} data={tasks} eventHandler={handleTaskRowEvents} />}
 
-			{/* Deletion Loader */}
-			{isDeleting && (
-				<div className="mt-6">
-					<Loader />
-				</div>
-			)}
+			{/* Loader */}
+			{isLoading && <Loader />}
 		</div>
 	);
 };

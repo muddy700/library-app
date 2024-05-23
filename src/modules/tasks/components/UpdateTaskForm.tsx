@@ -1,20 +1,24 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Task } from "../types";
 import { Success } from "@lims/shared/types";
-import { UpdateTaskDto } from "../payloads";
-import { Loader } from "@lims/shared/components";
+import { UpdateTaskDto } from "../schemas";
+import { DataDrawer } from "@lims/shared/components";
 import { apiService } from "@lims/shared/services";
+import { Button, Input } from "@material-tailwind/react";
 
 type UpdateTaskFormProps = {
-	toggleUpdateTaskForm: (value: boolean) => void;
+	toggleVisibility: (value: boolean) => void;
 	handleSuccess: (response: Success) => void;
 	taskId: number;
 };
 
-export const UpdateTaskForm = ({ toggleUpdateTaskForm, handleSuccess, taskId }: UpdateTaskFormProps) => {
+export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId }: UpdateTaskFormProps) => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [isUpdating, setIsUpdating] = useState<boolean>(false);
 	const [taskPayload, setTaskPayload] = useState<UpdateTaskDto>({} as UpdateTaskDto);
+
+	const title: string = "Task Form";
+	const subTitle: string = "Edit the form below to update Task details.";
 
 	const fetchTaskInfo = async () => {
 		const response = await apiService.getById<Task>("/tasks/" + taskId);
@@ -45,7 +49,7 @@ export const UpdateTaskForm = ({ toggleUpdateTaskForm, handleSuccess, taskId }: 
 		setIsUpdating(false);
 
 		if (response) {
-			toggleUpdateTaskForm(false);
+			toggleVisibility(false);
 			handleSuccess(response);
 		}
 	};
@@ -57,57 +61,20 @@ export const UpdateTaskForm = ({ toggleUpdateTaskForm, handleSuccess, taskId }: 
 		setTimeout(() => UpdateTaskInfo(), 1000);
 	};
 
-	const isFormValid = (): boolean => {
-		return taskPayload !== undefined;
-	};
-
-	const getBgColor = (): string => {
-		if (isFormValid()) return "bg-sky-300 hover:bg-sky-400";
-
-		return "bg-white hover:cursor-not-allowed";
-	};
-
-	if (isLoading)
-		return (
-			<div className="absolute place-self-end bg-gray-200 z-50 w-2/5 h-full py-2">
-				<Loader />
-			</div>
-		);
-
 	return (
-		<div className="absolute place-self-end bg-gray-200 z-50 w-2/5 h-full py-2">
-			{/* Section Header */}
-			<div className="grid grid-cols-5 text-start">
-				{/* Close Button */}
-				<button className="col-span-1 text-red-400 font-bold text-lg hover:text-red-500 hover:text-xl" onClick={() => toggleUpdateTaskForm(false)}>
-					X
-				</button>
-
-				{/* Dialog Title */}
-				<div className="col-span-4 ml-6 text-xl">Fill the form below to update Task info</div>
-			</div>
-
-			{/* Task Form: Start */}
-			<form onSubmit={handleFormSubmission} className="grid gap-y-6 p-2 mt-10">
+		<DataDrawer title={title} subTitle={subTitle} toggleVisibility={toggleVisibility} isLoading={isLoading}>
+			<form onSubmit={handleFormSubmission} className="grid gap-8">
 				{/* Title */}
-				<div className="flex flex-col text-start">
-					<label className="font-medium">Title: </label> <br />
-					<input className="border border-indigo-300 rounded leading-9" type="text" name="title" onChange={handleFormChanges} value={taskPayload?.title} />
-				</div>
+				<Input label="Title" name="title" type="text" onChange={handleFormChanges} value={taskPayload?.title} color="teal" size="lg" required />
 
 				{/* Duration */}
-				<div className="grid ">
-					{/* Duration */}
-					<div className="flex flex-col text-start">
-						<label className="font-medium">Maximum Duration: </label> <br />
-						<input type="number" className="border border-indigo-300 rounded leading-9" name="maxDuration" onChange={handleFormChanges} value={taskPayload?.maxDuration} />
-					</div>
-				</div>
-				<button disabled={!isFormValid()} className={`${getBgColor()} py-1 rounded-md font-bold my-3`}>
+				<Input label="Maximum Duration" name="maxDuration" type="number" onChange={handleFormChanges} value={taskPayload?.maxDuration} color="teal" size="lg" required />
+
+				{/* Action Button */}
+				<Button className="justify-center bg-primary-600" loading={isUpdating} type="submit">
 					{isUpdating ? "Updating..." : "Update"}
-				</button>
+				</Button>
 			</form>
-			{/* Task Form: End */}
-		</div>
+		</DataDrawer>
 	);
 };

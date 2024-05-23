@@ -1,9 +1,10 @@
 import React, { FormEvent, useState } from "react";
-import { Success } from "@lims/shared/types";
-import { TaskDto } from "../payloads";
-import { apiService } from "@lims/shared/services";
-import { DataDrawer } from "@lims/shared/components";
+import { Success, Validation } from "@lims/shared/types";
+import { TaskDto, TaskSchema } from "../schemas";
+import { apiService, formService } from "@lims/shared/services";
+import { DataDrawer, InputError } from "@lims/shared/components";
 import { Button, Input } from "@material-tailwind/react";
+import { ZodError } from "zod";
 
 type TaskFormProps = {
 	toggleVisibility: (value: boolean) => void;
@@ -16,10 +17,13 @@ export const TaskForm = ({ toggleVisibility, handleSuccess }: TaskFormProps) => 
 
 	const [taskPayload, setTaskPayload] = useState<TaskDto>({} as TaskDto);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [formErrors, setFormErrors] = useState<Validation[]>([]);
 
 	const handleFormChanges = (e: React.FormEvent<HTMLInputElement>) => {
-		const { name, value } = e.currentTarget;
-		setTaskPayload({ ...taskPayload, [name]: value } as TaskDto);
+		const { name: fieldName, value } = e.currentTarget;
+
+		formService.removeInputError(fieldName, formErrors, setFormErrors);
+		setTaskPayload({ ...taskPayload, [fieldName]: value } as TaskDto);
 	};
 
 	const saveTaskInfo = async () => {
@@ -35,25 +39,43 @@ export const TaskForm = ({ toggleVisibility, handleSuccess }: TaskFormProps) => 
 
 	const handleFormSubmission = (e: FormEvent<HTMLFormElement>): void => {
 		e.preventDefault();
-		setIsLoading(true);
 
-		setTimeout(() => saveTaskInfo(), 1000);
+		try {
+			TaskSchema.parse({ ...taskPayload, maxDuration: Number(taskPayload.maxDuration) });
+
+			setIsLoading(true);
+			setTimeout(() => saveTaskInfo(), 1000);
+		} catch (error) {
+			setFormErrors(formService.extractErrors(error as ZodError));
+		}
 	};
 
 	return (
 		<DataDrawer title={title} subTitle={subTitle} toggleVisibility={toggleVisibility}>
 			<form onSubmit={handleFormSubmission} className="grid gap-8">
 				{/* Title */}
-				<Input label="Title" name="title" type="text" onChange={handleFormChanges} color="teal" size="lg" required />
+				<div>
+					<Input label="Title" name="title" type="text" onChange={handleFormChanges} color="teal" size="lg" error={formService.hasError("title", formErrors)} required />
+					<InputError show={formService.hasError("title", formErrors)} message={formService.getErrorMessage("title", formErrors)} />
+				</div>
 
 				{/* Author Name and Email */}
 				<div className="flex gap-5">
-					<Input label="Author Name" name="authorName" type="text" onChange={handleFormChanges} color="teal" size="lg" required />
-					<Input label="Author Email" name="authorEmail" type="text" onChange={handleFormChanges} color="teal" size="lg" required />
+					<div>
+						<Input label="Author Name" name="authorName" type="text" onChange={handleFormChanges} color="teal" size="lg" error={formService.hasError("authorName", formErrors)} />
+						<InputError show={formService.hasError("authorName", formErrors)} message={formService.getErrorMessage("authorName", formErrors)} />
+					</div>
+					<div>
+						<Input label="Author Email" name="authorEmail" type="text" onChange={handleFormChanges} color="teal" size="lg" error={formService.hasError("authorEmail", formErrors)} />
+						<InputError show={formService.hasError("authorEmail", formErrors)} message={formService.getErrorMessage("authorEmail", formErrors)} />
+					</div>
 				</div>
 
 				{/* Duration */}
-				<Input label="Maximum Duration" name="maxDuration" type="number" onChange={handleFormChanges} color="teal" size="lg" required />
+				<div>
+					<Input label="Maximum Duration" name="maxDuration" type="number" onChange={handleFormChanges} color="teal" size="lg" error={formService.hasError("maxDuration", formErrors)} />
+					<InputError show={formService.hasError("maxDuration", formErrors)} message={formService.getErrorMessage("maxDuration", formErrors)} />
+				</div>
 
 				{/* Action Button */}
 				<Button className="justify-center bg-primary-600" loading={isLoading} type="submit">
