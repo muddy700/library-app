@@ -1,6 +1,10 @@
+import { BaseError } from "./BaseError";
 import { Validation } from "./Validation";
 
-export interface Error {
+// TODO: Remove the optional mark in traceId field
+
+export interface Error extends BaseError {
+	traceId?: string;
 	description: string;
 	path: string;
 	timestamp: string;

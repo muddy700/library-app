@@ -73,7 +73,7 @@ export const TaskForm = ({ toggleVisibility, handleSuccess }: TaskFormProps) => 
 
 				{/* Duration */}
 				<div>
-					<Input label="Maximum Duration" name="maxDuration" type="number" onChange={handleFormChanges} color="teal" size="lg" error={formService.hasError("maxDuration", formErrors)} />
+					<Input label="Maximum Duration" name="maxDuration" type="number" onChange={handleFormChanges} color="teal" size="lg" error={formService.hasError("maxDuration", formErrors)} required/>
 					<InputError show={formService.hasError("maxDuration", formErrors)} message={formService.getErrorMessage("maxDuration", formErrors)} />
 				</div>
 

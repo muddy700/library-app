@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { BaseTask } from "../types";
 import { TaskDetails } from "./TaskDetails";
 import { TaskForm } from "./TaskForm";
-import { DataTable, Loader, SuccessBanner } from "@lims/shared/components";
+import { DataTable, ErrorBanner, Loader, SuccessBanner } from "@lims/shared/components";
 import { UpdateTaskForm } from "./UpdateTaskForm";
-import { Success, TableColumn } from "@lims/shared/types";
+import { Error, Success, TableColumn } from "@lims/shared/types";
 import { apiService } from "@lims/shared/services";
 import { Button, Typography } from "@material-tailwind/react";
 import { PlusIcon } from "@heroicons/react/24/solid";
@@ -16,6 +16,7 @@ export const TaskList = () => {
 	const [showTaskForm, setShowTaskForm] = useState<boolean>(false);
 	const [showUpdateTaskForm, setShowUpdateTaskForm] = useState<boolean>(false);
 	const [successResponse, setSuccessResponse] = useState<Success | undefined>();
+	const [errorResponse, setErrorResponse] = useState<Error | undefined>();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const tableColumns: TableColumn[] = [
@@ -81,15 +82,14 @@ export const TaskList = () => {
 		else if (eventId === 3) handleTaskDeletion(taskId);
 	};
 
-	if (successResponse)
-		return (
-			<div className="grid place-content-center">
-				<SuccessBanner data={successResponse} actionHandler={handleSuccessActions} />
-			</div>
-		);
-
 	return (
 		<div className="grid place-content-center">
+			{/* Success Banner */}
+			{successResponse && <SuccessBanner data={successResponse} actionHandler={handleSuccessActions} />}
+
+			{/* Error Banner */}
+			{errorResponse && <ErrorBanner data={errorResponse} />}
+
 			{/* Task Details */}
 			{showTaskDetails && activeTaskId && <TaskDetails taskId={activeTaskId} toggleTaskDetails={setShowTaskDetails} handleSuccess={setSuccessResponse} onEdit={handleTaskEdition} />}
 

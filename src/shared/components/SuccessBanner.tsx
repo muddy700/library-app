@@ -1,4 +1,7 @@
+import { Button, DialogBody, DialogFooter, DialogHeader, Typography } from "@material-tailwind/react";
 import { Success } from "../types";
+import { DataDialog } from "./DataDialog";
+import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 
 type BannerProps = {
 	data: Success;
@@ -6,27 +9,28 @@ type BannerProps = {
 };
 
 export const SuccessBanner = ({ data, actionHandler }: BannerProps) => {
-	const itWasNotDeletingAction = (): boolean => {
-		if (!data.message.includes("deleted")) return true;
-		return false;
-	};
+	const itWasNotDeletingAction = () => !data.message.includes("deleted");
 
 	return (
-		<div className="flex flex-col px-6  py-3 gap-y-10 bg-green-300 rounded-md my-3">
-			<div className="font-medium text-lg">{data.message}</div>
-			<div className="flex gap-x-5 justify-center">
+		<DataDialog className="flex flex-col items-center border-t-8 border-green-600">
+			<DialogHeader className="flex flex-col text-green-600">
+				<CheckBadgeIcon className="h-20 w-20" />
+				<Typography variant="h4">Congratulations!</Typography>
+			</DialogHeader>
+			<DialogBody className="font-normal">{data.message}</DialogBody>
+			<DialogFooter className="flex gap-5 justify-center">
 				{itWasNotDeletingAction() && (
-					<button className="bg-indigo-300 px-2 py-1 rounded-md hover:bg-indigo-400 border border-black font-medium" onClick={() => actionHandler(1)}>
+					<Button variant="outlined" onClick={() => actionHandler(1)} className="text-secondary-600 border-secondary-600 ">
 						View Task
-					</button>
+					</Button>
 				)}
-				<button className="mx-3 bg-blue-300 px-2 py-1 rounded-md hover:bg-blue-400 border border-black font-medium" onClick={() => actionHandler(2)}>
+				<Button onClick={() => actionHandler(2)} className="bg-primary-600">
 					Add New
-				</button>
-				<button className="bg-gray-300 px-2 py-1 rounded-md hover:bg-gray-400 border border-black font-medium" onClick={() => actionHandler(3)}>
+				</Button>
+				<Button variant="outlined" onClick={() => actionHandler(3)} className="text-primary-600 border-primary-600">
 					Todos List
-				</button>
-			</div>
-		</div>
+				</Button>
+			</DialogFooter>
+		</DataDialog>
 	);
 };
