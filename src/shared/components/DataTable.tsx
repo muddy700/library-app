@@ -1,73 +1,184 @@
-import { Card, IconButton, Typography } from "@material-tailwind/react";
-import { PrimaryData, TableColumn } from "../types";
+import { Button, Card, CardBody, CardFooter, Chip, IconButton, Input, Typography } from "@material-tailwind/react";
+import { PrimaryData, TableActionEnum, TableColumn } from "../types";
 import { TableHead } from "./TableHead";
 import { EyeIcon } from "@heroicons/react/24/solid";
-import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
-import React from "react";
+import { FunnelIcon, MagnifyingGlassIcon, PencilSquareIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import React, { useState } from "react";
+import { colors } from "@material-tailwind/react/types/generic";
 
 type TableProps<T> = {
-	columns: TableColumn[];
-	data: T[];
+	columns?: TableColumn[];
+	data?: T[];
+	entityName?: string;
 	hasSerialNumbers?: boolean;
-	hasActions?: boolean;
-	eventHandler: (eventId: number, taskId: number) => void;
+	actions?: TableActionEnum[];
+	actionHandler?: (actionId: TableActionEnum, data: unknown) => void;
 };
 
-export const DataTable = <T extends PrimaryData>({ columns, data, hasSerialNumbers = true, hasActions = true, eventHandler }: TableProps<T>) => {
+export const DataTable = <T extends PrimaryData>({
+	columns = [],
+	data = [],
+	entityName = "Entity",
+	hasSerialNumbers = true,
+	actions = [],
+	actionHandler = (actionId: TableActionEnum, data: unknown) => console.log("Table action handler: ", actionId, data),
+}: TableProps<T>) => {
+	const [searchQuery, setSearchQuery] = useState<string>("");
+
+	const buttonClasses: string = "flex items-center gap-3 text-primary-900 py-2 px-3";
+	const { NEW, FILTER, SEARCH, VIEW, UPDATE, DELETE, VIEW_MORE, MORE_ACTIONS } = TableActionEnum;
+
+	const getNumberOfColumns = (): number => {
+		let cols = columns.length;
+
+		if (hasActionsColumn()) cols += 1;
+
+		if (hasSerialNumbers) cols += 1;
+
+		return cols;
+	};
+
+	const hasActionsColumn = (): boolean => {
+		// Table actions which display under the Actions column
+		const eligibleActions = [VIEW, UPDATE, DELETE, VIEW_MORE, MORE_ACTIONS];
+
+		return actions.some((action) => eligibleActions.includes(action));
+	};
+
+	const isVisible = (actionId: TableActionEnum): boolean => {
+		return actions.find((action) => action === actionId) ? true : false;
+	};
+
+	const getBooleanValue = (column: TableColumn, row: T): string => {
+		return ((row[column.fieldName as never] as boolean) ? column.options?.valid : column.options?.invalid) as string;
+	};
+
+	const getBooleanColor = (column: TableColumn, row: T): colors => {
+		return (row[column.fieldName as never] as boolean) ? "green" : "red";
+	};
+
 	return (
-		<Card className="h-full w-full overflow-scroll">
-			<table className="w-full min-w-max table-auto text-left">
-				<TableHead hasSerialNumbers={hasSerialNumbers} hasActions={hasActions} columns={columns} />
-				<tbody>
-					{data.map((dataRow: T, rowIndex: number) => {
-						const isLast = rowIndex === data.length - 1;
-						let tdClasses = "p-4";
-						tdClasses += isLast ? "" : " border-b border-blue-gray-50";
+		<div className="flex flex-col gap-2">
+			{/* Table actions row: Start */}
+			<div className="flex items-center justify-between">
+				<div className="flex gap-3 items-center">
+					{isVisible(NEW) && (
+						<Button className={buttonClasses} variant="outlined" onClick={() => actionHandler(NEW, null)}>
+							<PlusIcon className="h-5 w-5" strokeWidth={2} />
+							New {entityName}
+						</Button>
+					)}
+					{isVisible(FILTER) && (
+						<Button className={buttonClasses} variant="outlined" onClick={() => actionHandler(FILTER, null)}>
+							<FunnelIcon className="w-5 h-5" strokeWidth={2} />
+							Filter
+						</Button>
+					)}
+				</div>
+				<div className="w-72">
+					{isVisible(SEARCH) && (
+						<Input
+							label="Search"
+							icon={<MagnifyingGlassIcon className="h-5 w-5 hover:cursor-pointer" onClick={() => actionHandler(SEARCH, searchQuery)} />}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							color="teal"
+							size="lg"
+						/>
+					)}
+				</div>
+			</div>
+			{/* Table actions row: End */}
 
-						return (
-							<tr key={rowIndex} className="hover:shadow-xl hover:bg-secondary-200/50">
-								{columns.map((column: TableColumn, columnIndex: number) => (
-									// TODO: Each child in a list should have a unique "key" prop
-									<React.Fragment key={columnIndex}>
-										{/* S/No column */}
-										{hasSerialNumbers && columnIndex === 0 && (
-											<td className={tdClasses}>
-												<Typography variant="small" color="blue-gray" className="font-normal">
-													{rowIndex + 1}
-												</Typography>
-											</td>
-										)}
+			{/* Table component: Start */}
+			<Card className="h-full w-full overflow-scroll border-b-4 border-primary-900">
+				<CardBody className="p-0">
+					<table className="w-full min-w-max table-auto text-left">
+						<TableHead hasSerialNumbers={hasSerialNumbers} hasActionsColumn={hasActionsColumn()} columns={columns} />
+						<tbody>
+							{/* Row Placeholder */}
+							{!data.length && (
+								<tr className="text-center">
+									<td colSpan={getNumberOfColumns()} className="py-4">
+										No data to display.
+									</td>
+								</tr>
+							)}
 
-										{/* Other columns */}
-										<td className={tdClasses}>
-											<Typography variant="small" color="blue-gray" className="font-normal">
-												{column.dataType === "text" && dataRow[column.fieldName as never]}
+							{data.length > 0 &&
+								data.map((dataRow: T, rowIndex: number) => {
+									const isLast = rowIndex === data.length - 1;
+									let tdClasses = "p-4";
+									tdClasses += isLast ? "" : " border-b border-blue-gray-50";
 
-												{column.dataType === "date" && (dataRow[column.fieldName as never] as string).split("T")[0]}
-											</Typography>
-										</td>
+									return (
+										<tr key={rowIndex} className="hover:shadow-xl hover:bg-secondary-200">
+											{columns.map((column: TableColumn, columnIndex: number) => (
+												// TODO: Each child in a list should have a unique "key" prop
+												<React.Fragment key={columnIndex}>
+													{/* S/No column */}
+													{hasSerialNumbers && columnIndex === 0 && (
+														<td className={tdClasses}>
+															<Typography variant="small" color="blue-gray" className="font-normal">
+																{rowIndex + 1}
+															</Typography>
+														</td>
+													)}
 
-										{/* Actions column */}
-										{hasActions && columnIndex === columns.length - 1 && (
-											<td>
-												<IconButton variant="text" color="indigo" onClick={() => eventHandler(1, dataRow.id)}>
-													<EyeIcon className="h-5 w-5" />
-												</IconButton>
-												<IconButton variant="text" color="blue" onClick={() => eventHandler(2, dataRow.id)}>
-													<PencilSquareIcon className="h-5 w-5" />
-												</IconButton>
-												<IconButton variant="text" color="red" onClick={() => eventHandler(3, dataRow.id)}>
-													<TrashIcon className="h-5 w-5" />
-												</IconButton>
-											</td>
-										)}
-									</React.Fragment>
-								))}
-							</tr>
-						);
-					})}
-				</tbody>
-			</table>
-		</Card>
+													{/* Other columns */}
+													<td className={tdClasses}>
+														<Typography variant="small" color="blue-gray" className="font-normal">
+															{(column?.dataType === "text" || !column?.dataType) && dataRow[column.fieldName as never]}
+
+															{column.dataType === "date" && (dataRow[column.fieldName as never] as string).split("T")[0]}
+															{column.dataType === "boolean" && (
+																<Chip variant="ghost" size="sm" value={getBooleanValue(column, dataRow)} color={getBooleanColor(column, dataRow)} />
+															)}
+														</Typography>
+													</td>
+
+													{/* Actions column */}
+													{hasActionsColumn() && columnIndex === columns.length - 1 && (
+														<td>
+															{isVisible(VIEW) && (
+																<IconButton variant="text" color="indigo" onClick={() => actionHandler(VIEW, dataRow.id)}>
+																	<EyeIcon className="h-5 w-5" />
+																</IconButton>
+															)}
+															{isVisible(UPDATE) && (
+																<IconButton variant="text" color="blue" onClick={() => actionHandler(UPDATE, dataRow.id)}>
+																	<PencilSquareIcon className="h-5 w-5" />
+																</IconButton>
+															)}
+															{isVisible(DELETE) && (
+																<IconButton variant="text" color="red" onClick={() => actionHandler(DELETE, dataRow.id)}>
+																	<TrashIcon className="h-5 w-5" />
+																</IconButton>
+															)}
+														</td>
+													)}
+												</React.Fragment>
+											))}
+										</tr>
+									);
+								})}
+						</tbody>
+					</table>
+				</CardBody>
+				<CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
+					<Typography variant="small" color="blue-gray" className="font-normal">
+						Page 1 of 10
+					</Typography>
+					<div className="flex gap-3 items-center">
+						<Button variant="outlined" size="sm">
+							Previous
+						</Button>
+						<Button variant="outlined" size="sm">
+							Next
+						</Button>
+					</div>
+				</CardFooter>
+			</Card>
+			{/* Table component: End */}
+		</div>
 	);
 };

@@ -4,10 +4,8 @@ import { TaskDetails } from "./TaskDetails";
 import { TaskForm } from "./TaskForm";
 import { DataTable, ErrorBanner, Loader, SuccessBanner } from "@lims/shared/components";
 import { UpdateTaskForm } from "./UpdateTaskForm";
-import { Error, Success, TableColumn } from "@lims/shared/types";
+import { Error, Success, TableActionEnum, TableColumn } from "@lims/shared/types";
 import { apiService } from "@lims/shared/services";
-import { Button, Typography } from "@material-tailwind/react";
-import { PlusIcon } from "@heroicons/react/24/solid";
 
 export const TaskList = () => {
 	const [tasks, setTasks] = useState<BaseTask[]>([]);
@@ -19,13 +17,16 @@ export const TaskList = () => {
 	const [errorResponse, setErrorResponse] = useState<Error | undefined>();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
+	const { NEW, FILTER, SEARCH, VIEW, UPDATE, DELETE } = TableActionEnum;
+	const tableActions = [NEW, FILTER, SEARCH, VIEW, UPDATE, DELETE];
+
 	const tableColumns: TableColumn[] = [
-		{ label: "Title", fieldName: "title", dataType: "text" },
+		{ label: "Title", fieldName: "title" },
 		{ label: "Created At", fieldName: "createdAt", dataType: "date" },
 	];
 
 	const fetchTasks = async () => {
-		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 10 });
+		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 100 });
 
 		setIsLoading(false);
 		if (response) setTasks(response.items);
@@ -54,7 +55,7 @@ export const TaskList = () => {
 
 	const callHim = () => {
 		setIsLoading(true);
-		setTimeout(() => fetchTasks(), 1000);
+		setTimeout(() => fetchTasks(), 100);
 	};
 
 	useEffect(() => callHim(), []);
@@ -76,14 +77,17 @@ export const TaskList = () => {
 		setActiveTaskId(taskId);
 	};
 
-	const handleTaskRowEvents = (eventId: number, taskId: number): void => {
-		if (eventId === 1) viewTaskDetails(taskId);
-		else if (eventId === 2) handleTaskEdition(taskId);
-		else if (eventId === 3) handleTaskDeletion(taskId);
+	const handleTableActions = (actionId: TableActionEnum, data: unknown): void => {
+		const taskId = data as number;
+
+		if (actionId === VIEW) viewTaskDetails(taskId);
+		else if (actionId === UPDATE) handleTaskEdition(taskId);
+		else if (actionId === DELETE) handleTaskDeletion(taskId);
+		else if (actionId === NEW) setShowTaskForm(true);
 	};
 
 	return (
-		<div className="grid place-content-center">
+		<div className="">
 			{/* Success Banner */}
 			{successResponse && <SuccessBanner data={successResponse} actionHandler={handleSuccessActions} />}
 
@@ -99,21 +103,8 @@ export const TaskList = () => {
 			{/* Update Task Form */}
 			{showUpdateTaskForm && activeTaskId && <UpdateTaskForm toggleVisibility={setShowUpdateTaskForm} handleSuccess={setSuccessResponse} taskId={activeTaskId} />}
 
-			{/* Page Title */}
-			<Typography className="text-center py-3" variant="h4">
-				Todos List({tasks.length})
-			</Typography>
-
-			{/* Create new task button */}
-			{!isLoading && (
-				<Button className="flex justify-center items-center gap-3 bg-primary-600 hover:bg-primary-700 my-3" onClick={() => setShowTaskForm(true)}>
-					<PlusIcon className="h-5 w-5 " />
-					New Task
-				</Button>
-			)}
-
 			{/* Todos list */}
-			{!isLoading && tasks && <DataTable<BaseTask> columns={tableColumns} data={tasks} eventHandler={handleTaskRowEvents} />}
+			{!isLoading && <DataTable<BaseTask> columns={tableColumns} data={tasks} actionHandler={handleTableActions} entityName="Task" actions={tableActions} />}
 
 			{/* Loader */}
 			{isLoading && <Loader />}

@@ -3,15 +3,15 @@ import { TableColumn } from "../types";
 
 type TableHeadProps = {
 	hasSerialNumbers: boolean;
-	hasActions: boolean;
+	hasActionsColumn: boolean;
 	columns: TableColumn[];
 };
 
-export const TableHead = ({ hasSerialNumbers, hasActions, columns }: TableHeadProps) => {
+export const TableHead = ({ hasSerialNumbers, hasActionsColumn, columns }: TableHeadProps) => {
 	// Re-used classes
-	const thClasses = "border-b border-blue-gray-100 bg-blue-gray-50 p-4";
-	const thTypographyClasses = "font-normal leading-none opacity-70";
-	const headersColor = "blue-gray";
+	const thClasses = "border-b border-blue-gray-100 bg-primary-900 p-4";
+	const thTypographyClasses = "font-bold leading-none opacity-70";
+	const headersColor = "white";
 
 	return (
 		<thead>
@@ -35,7 +35,7 @@ export const TableHead = ({ hasSerialNumbers, hasActions, columns }: TableHeadPr
 				))}
 
 				{/* Actions column */}
-				{hasActions && (
+				{hasActionsColumn && (
 					<th className={thClasses}>
 						<Typography variant="small" color={headersColor} className={thTypographyClasses}>
 							Actions

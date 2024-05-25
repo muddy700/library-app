@@ -1,8 +1,8 @@
 import "./App.css";
-import { TasksModule } from "./modules";
+import { Home } from "./shared/layouts";
 
 const App = () => {
-	return <TasksModule />;
+	return <Home />;
 };
 
 export default App;

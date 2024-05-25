@@ -10,3 +10,4 @@ export type { PrimaryData } from "./PrimaryData";
 export type { CreationData } from "./CreationData";
 export type { UpdationData } from "./UpdationData";
 export type { BaseData } from "./BaseData";
+export { TableActionEnum } from "./TableAction";

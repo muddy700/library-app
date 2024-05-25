@@ -1,3 +1,3 @@
 export interface PrimaryData {
-	id: number;
+	id: string;
 }
