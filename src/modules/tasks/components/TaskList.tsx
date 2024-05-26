@@ -55,7 +55,7 @@ export const TaskList = () => {
 
 	const callHim = () => {
 		setIsLoading(true);
-		setTimeout(() => fetchTasks(), 100);
+		setTimeout(() => fetchTasks(), 1000);
 	};
 
 	useEffect(() => callHim(), []);

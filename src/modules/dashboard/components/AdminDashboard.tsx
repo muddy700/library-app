@@ -19,7 +19,7 @@ export const AdminDashboard = () => {
 		<div className="flex flex-col gap-3">
 			<div className="grid grid-cols-4 gap-4">
 				{summaryCards.map((card) => (
-					<Card className="group hover:bg-primary-900">
+					<Card className="group text-primary-900 border-b-2 border-primary-900 hover:bg-primary-900">
 						<CardBody className="group-hover:text-white group-hover:cursor-pointer ">
 							<div className="flex justify-between items-center">
 								<Typography className="" variant="h6">

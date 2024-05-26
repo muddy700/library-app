@@ -1,2 +1,3 @@
-export { Home } from "./Home";
-export {Page} from './Page'
+export { BaseLayout } from "./BaseLayout";
+export { Page } from "./Page";
+export { Sidebar } from "./Sidebar";

@@ -11,8 +11,8 @@ type PageProps = {
 
 export const Page = ({ title, subTitle, path, children }: PageProps) => {
 	return (
-		<div className="w-full bg-secondary-200">
-			<div className="flex justify-between px-2">
+		<div className="w-full bg-secondary-200 p-2">
+			<div className="flex justify-between">
 				<div className="flex flex-col text-primary-900">
 					<Typography variant="h4">{title}</Typography>
 					<Typography variant="small" className="border-l-4 border-primary-900 ml-1 pl-1 font-normal">
@@ -31,7 +31,7 @@ export const Page = ({ title, subTitle, path, children }: PageProps) => {
 						))}
 				</Breadcrumbs>
 			</div>
-			<div className="p-2 pt-4">{children}</div>
+			<div className="pt-10">{children}</div>
 		</div>
 	);
 };
