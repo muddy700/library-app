@@ -6,6 +6,7 @@ import { DataTable, ErrorBanner, Loader, SuccessBanner } from "@lims/shared/comp
 import { UpdateTaskForm } from "./UpdateTaskForm";
 import { Error, Success, TableActionEnum, TableColumn } from "@lims/shared/types";
 import { apiService } from "@lims/shared/services";
+import { Page } from "@lims/shared/layouts";
 
 export const TaskList = () => {
 	const [tasks, setTasks] = useState<BaseTask[]>([]);
@@ -26,7 +27,7 @@ export const TaskList = () => {
 	];
 
 	const fetchTasks = async () => {
-		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 100 });
+		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 9 });
 
 		setIsLoading(false);
 		if (response) setTasks(response.items);
@@ -87,7 +88,7 @@ export const TaskList = () => {
 	};
 
 	return (
-		<div className="">
+		<Page title="Tasks" subTitle="Manage your todos" path={["Public", "Todos"]}>
 			{/* Success Banner */}
 			{successResponse && <SuccessBanner data={successResponse} actionHandler={handleSuccessActions} />}
 
@@ -108,6 +109,6 @@ export const TaskList = () => {
 
 			{/* Loader */}
 			{isLoading && <Loader />}
-		</div>
+		</Page>
 	);
 };

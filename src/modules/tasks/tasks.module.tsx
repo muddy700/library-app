@@ -1,6 +1,10 @@
-import { Page } from "@lims/shared/layouts";
+import { Route, Routes } from "react-router-dom";
 import { TaskList } from "./components";
 
 export const TasksModule = () => {
-	return <Page title="Tasks" subTitle="Manage your todos" path={["Public", "Todos"]} children={<TaskList />} />;
+	return (
+		<Routes>
+			<Route index element={<TaskList />} />
+		</Routes>
+	);
 };

@@ -4,10 +4,10 @@ import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { BookOpenIcon, Cog6ToothIcon, LockOpenIcon, UsersIcon } from "@heroicons/react/24/outline";
 
 const dashCards: SummaryCard[] = [
-	{ title: "Users", value: 120, icon: <UsersIcon className="w-5 h-5" /> },
-	{ title: "Books", value: 450, icon: <BookOpenIcon className="w-5 h-5" /> },
-	{ title: "Roles", value: 3, icon: <Cog6ToothIcon className="w-5 h-5" /> },
-	{ title: "Permissions", value: 120, icon: <LockOpenIcon className="w-5 h-5" /> },
+	{ title: "Users", value: 120, icon: <UsersIcon className="w-5 h-5" strokeWidth={2} /> },
+	{ title: "Books", value: 450, icon: <BookOpenIcon className="w-5 h-5" strokeWidth={2} /> },
+	{ title: "Roles", value: 3, icon: <Cog6ToothIcon className="w-5 h-5" strokeWidth={2} /> },
+	{ title: "Permissions", value: 120, icon: <LockOpenIcon className="w-5 h-5" strokeWidth={2} /> },
 ];
 
 export const AdminDashboard = () => {

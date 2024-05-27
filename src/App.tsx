@@ -11,9 +11,9 @@ const App = () => {
 			element: <BaseLayout />,
 			children: [
 				{ index: true, element: <Navigate to={"dashboard"} /> },
-				{ path: "dashboard", element: <DashboardModule /> },
-				{ path: "todos", element: <TasksModule /> },
-				{ path: "users", element: <UsersModule /> },
+				{ path: "dashboard/*", element: <DashboardModule /> },
+				{ path: "todos/*", element: <TasksModule /> },
+				{ path: "users/*", element: <UsersModule /> },
 				{ path: "*", element: <PageNotFound /> },
 			],
 		},
