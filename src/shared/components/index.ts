@@ -6,3 +6,4 @@ export { DataDrawer } from "./DataDrawer";
 export { InputError } from "./InputError";
 export { DataDialog } from "./DataDialog";
 export { PageNotFound } from "./PageNotFound";
+export { TableSkeleton } from "./TableSkeleton";

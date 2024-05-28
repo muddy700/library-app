@@ -8,7 +8,7 @@ export const Sidebar = () => {
 	const navigate = useNavigate();
 
 	return (
-		<Card className="h-[calc(100vh-2rem)] w-full max-w-[15rem] p-2 shadow-xl shadow-primary-900/25 bg-secondary-100">
+		<Card className="h-[calc(100vh-3.8rem)] w-full max-w-[15rem] p-2 shadow-xl shadow-primary-900/25 bg-secondary-100">
 			<List>
 				<ListItem onClick={() => navigate("dashboard")}>
 					<ListItemPrefix>

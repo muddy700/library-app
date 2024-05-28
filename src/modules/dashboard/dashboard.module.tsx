@@ -1,6 +1,9 @@
 import { Page } from "@lims/shared/layouts";
 import { AdminDashboard } from "./components";
+import { NavigationPath } from "@lims/shared/types";
 
 export const DashboardModule = () => {
-	return <Page title="Dashboard" subTitle="Application summary" path={["Public", "Dashboard"]} children={<AdminDashboard />} />;
+	const navPaths: NavigationPath[] = [{ label: "dashboard" }];
+
+	return <Page title="Dashboard" subTitle="Application summary" paths={navPaths} children={<AdminDashboard />} />;
 };

@@ -90,7 +90,7 @@ export const DataTable = <T extends PrimaryData>({
 			{/* Table actions row: End */}
 
 			{/* Table component: Start */}
-			<Card className="h-full w-full overflow-scroll border-b-4 border-primary-900">
+			<Card className="h-full w-full overflow-x-scroll border-b-4 border-primary-900">
 				<CardBody className="p-0">
 					<table className="w-full min-w-max table-auto text-left">
 						<TableHead hasSerialNumbers={hasSerialNumbers} hasActionsColumn={hasActionsColumn()} columns={columns} />

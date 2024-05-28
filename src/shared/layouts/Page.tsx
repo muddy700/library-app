@@ -1,15 +1,17 @@
 import { HomeIcon } from "@heroicons/react/24/solid";
 import { Breadcrumbs, Typography } from "@material-tailwind/react";
 import { ReactNode } from "react";
+import { NavigationPath } from "../types";
 
 type PageProps = {
 	title: string;
 	subTitle: string;
-	path: string[];
+	paths: NavigationPath[];
+	isLoading?: boolean;
 	children: ReactNode;
 };
 
-export const Page = ({ title, subTitle, path, children }: PageProps) => {
+export const Page = ({ title, subTitle, paths, isLoading = false, children }: PageProps) => {
 	return (
 		<div className="w-full bg-secondary-200 p-2">
 			<div className="flex justify-between">
@@ -20,13 +22,13 @@ export const Page = ({ title, subTitle, path, children }: PageProps) => {
 					</Typography>
 				</div>
 				<Breadcrumbs>
-					<a href="#" className="opacity-60">
-						<HomeIcon className="h-5 w-5" />
+					<a href="/dashboard" className="opacity-60 text-primary-900">
+						<HomeIcon className="h-4 w-4" />
 					</a>
-					{path.length > 0 &&
-						path.map((item) => (
-							<a key={item} href="#" className="opacity-60">
-								<span>{item}</span>
+					{paths.length > 0 &&
+						paths.map((item) => (
+							<a key={item.label} href={`${item?.url ?? "#"}`} className="opacity-60 text-primary-900">
+								<span>{item.label}</span>
 							</a>
 						))}
 				</Breadcrumbs>

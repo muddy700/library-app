@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
-import { User } from "../types";
+import { BaseUser } from "../types";
 import { DataTable } from "@lims/shared/components";
-import { TableActionEnum, TableColumn } from "@lims/shared/types";
+import { NavigationPath, TableActionEnum, TableColumn } from "@lims/shared/types";
 import { dummyDataService } from "@lims/shared/services";
+import { Page } from "@lims/shared/layouts";
+import { useNavigate } from "react-router-dom";
 
 export const UsersList = () => {
-	const [users, setUsers] = useState<User[]>([]);
+	const [users, setUsers] = useState<BaseUser[]>([]);
+
+	const navigate = useNavigate();
 	const { NEW, FILTER, SEARCH, VIEW, UPDATE } = TableActionEnum;
 	const tableActions = [NEW, FILTER, SEARCH, VIEW, UPDATE];
+
+	const navPaths: NavigationPath[] = [{ label: "users" }, { label: "list" }];
 
 	const tableColumns: TableColumn[] = [
 		{ label: "Full Name", fieldName: "fullName" },
@@ -21,8 +27,14 @@ export const UsersList = () => {
 	useEffect(() => setUsers(dummyDataService.initialUsers), []);
 
 	const handleTableActions = (actionId: TableActionEnum, data: unknown): void => {
-		if (actionId === NEW) console.log("Create New User Clicked: ", actionId, data);
+		const userId = data as string;
+
+		if (actionId === VIEW) navigate("../" + userId + "/details");
 	};
 
-	return <DataTable<User> columns={tableColumns} data={users} entityName="User" actions={tableActions} actionHandler={handleTableActions} />;
+	return (
+		<Page title="Users" subTitle="Manage system users" paths={navPaths}>
+			<DataTable<BaseUser> columns={tableColumns} data={users} entityName="User" actions={tableActions} actionHandler={handleTableActions} />
+		</Page>
+	);
 };

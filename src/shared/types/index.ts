@@ -11,3 +11,4 @@ export type { CreationData } from "./CreationData";
 export type { UpdationData } from "./UpdationData";
 export type { BaseData } from "./BaseData";
 export { TableActionEnum } from "./TableAction";
+export type { NavigationPath } from "./NavigationPath";

@@ -4,7 +4,7 @@ import { TaskDetails } from "./TaskDetails";
 import { TaskForm } from "./TaskForm";
 import { DataTable, ErrorBanner, Loader, SuccessBanner } from "@lims/shared/components";
 import { UpdateTaskForm } from "./UpdateTaskForm";
-import { Error, Success, TableActionEnum, TableColumn } from "@lims/shared/types";
+import { Error, NavigationPath, Success, TableActionEnum, TableColumn } from "@lims/shared/types";
 import { apiService } from "@lims/shared/services";
 import { Page } from "@lims/shared/layouts";
 
@@ -26,7 +26,10 @@ export const TaskList = () => {
 		{ label: "Created At", fieldName: "createdAt", dataType: "date" },
 	];
 
+	const navPaths: NavigationPath[] = [{ label: "todos" }, { label: "list" }];
+
 	const fetchTasks = async () => {
+		setErrorResponse(undefined);
 		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 9 });
 
 		setIsLoading(false);
@@ -88,7 +91,7 @@ export const TaskList = () => {
 	};
 
 	return (
-		<Page title="Tasks" subTitle="Manage your todos" path={["Public", "Todos"]}>
+		<Page title="Tasks" subTitle="Manage your todos" paths={navPaths} isLoading={isLoading}>
 			{/* Success Banner */}
 			{successResponse && <SuccessBanner data={successResponse} actionHandler={handleSuccessActions} />}
 
