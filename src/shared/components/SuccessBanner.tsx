@@ -4,12 +4,14 @@ import { DataDialog } from "./DataDialog";
 import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 
 type BannerProps = {
-	data: Success;
+	data?: Success;
 	actionHandler: (actionId: number) => void;
 };
 
 export const SuccessBanner = ({ data, actionHandler }: BannerProps) => {
-	const itWasNotDeletingAction = () => !data.message.includes("deleted");
+	const itWasNotDeletingAction = () => data && !data.message.includes("deleted");
+
+	if (!data) return;
 
 	return (
 		<DataDialog className="flex flex-col items-center border-t-8 border-green-600">

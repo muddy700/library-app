@@ -5,10 +5,12 @@ import { EyeIcon } from "@heroicons/react/24/solid";
 import { FunnelIcon, MagnifyingGlassIcon, PencilSquareIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
 import { colors } from "@material-tailwind/react/types/generic";
+import { TableSkeleton } from "./TableSkeleton";
 
 type TableProps<T> = {
 	columns?: TableColumn[];
 	data?: T[];
+	isLoading?: boolean;
 	entityName?: string;
 	hasSerialNumbers?: boolean;
 	actions?: TableActionEnum[];
@@ -18,6 +20,7 @@ type TableProps<T> = {
 export const DataTable = <T extends PrimaryData>({
 	columns = [],
 	data = [],
+	isLoading = false,
 	entityName = "Entity",
 	hasSerialNumbers = true,
 	actions = [],
@@ -56,6 +59,8 @@ export const DataTable = <T extends PrimaryData>({
 	const getBooleanColor = (column: TableColumn, row: T): colors => {
 		return (row[column.fieldName as never] as boolean) ? "green" : "red";
 	};
+
+	if (isLoading) return <TableSkeleton />;
 
 	return (
 		<div className="flex flex-col gap-2">

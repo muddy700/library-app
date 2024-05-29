@@ -1,18 +1,19 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Task } from "../types";
-import { Success } from "@lims/shared/types";
+import { Error, Success } from "@lims/shared/types";
 import { UpdateTaskDto } from "../schemas";
 import { DataDrawer } from "@lims/shared/components";
-import { apiService } from "@lims/shared/services";
+import { apiService, utilService } from "@lims/shared/services";
 import { Button, Input } from "@material-tailwind/react";
 
 type UpdateTaskFormProps = {
 	toggleVisibility: (value: boolean) => void;
 	handleSuccess: (response: Success) => void;
+	handleFailure: (response: Error) => void;
 	taskId: number;
 };
 
-export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId }: UpdateTaskFormProps) => {
+export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId, handleFailure }: UpdateTaskFormProps) => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [isUpdating, setIsUpdating] = useState<boolean>(false);
 	const [taskPayload, setTaskPayload] = useState<UpdateTaskDto>({} as UpdateTaskDto);
@@ -25,7 +26,7 @@ export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId }: Upda
 
 		setIsLoading(false);
 
-		if (response) {
+		if (utilService.isValidData(response)) {
 			const { title, maxDuration, published } = response;
 			setTaskPayload({ title, maxDuration, published });
 		}
@@ -48,10 +49,10 @@ export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId }: Upda
 
 		setIsUpdating(false);
 
-		if (response) {
+		if (utilService.isSuccess(response)) {
 			toggleVisibility(false);
 			handleSuccess(response);
-		}
+		} else handleFailure(response);
 	};
 
 	const handleFormSubmission = (e: FormEvent<HTMLFormElement>): void => {

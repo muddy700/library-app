@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Task } from "../types";
 import { DataDrawer } from "@lims/shared/components";
 import { Success } from "@lims/shared/types";
-import { apiService } from "@lims/shared/services";
+import { apiService, utilService } from "@lims/shared/services";
 import { Button } from "@material-tailwind/react";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 
@@ -24,7 +24,7 @@ export const TaskDetails = ({ taskId, toggleTaskDetails, handleSuccess, onEdit }
 		const response = await apiService.getById<Task>("/tasks/" + taskId);
 
 		setIsLoading(false);
-		if (response) setTaskInfo(response);
+		if (utilService.isValidData(response)) setTaskInfo(response);
 	};
 
 	const callHim = () => {
@@ -42,7 +42,7 @@ export const TaskDetails = ({ taskId, toggleTaskDetails, handleSuccess, onEdit }
 
 			setIsLoading(false);
 
-			if (response) {
+			if (utilService.isSuccess(response)) {
 				toggleTaskDetails(false);
 				handleSuccess(response);
 			}

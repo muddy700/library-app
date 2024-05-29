@@ -1,4 +1,5 @@
 import { BaseUser, User } from "@lims/modules/users/types";
+import { Error } from "../types";
 
 export const initialUsers: BaseUser[] = [
 	{
@@ -156,4 +157,13 @@ export const userDetails: User = {
 	passwordChangedAt: "2024-04-29T11:03:18.433+00:00",
 	createdAt: "2024-04-25T10:59:04.969+00:00",
 	updatedAt: "2024-04-29T11:03:18.437+00:00",
+};
+
+export const unknownError: Error = {
+	status: 400,
+	title: "Unknown Error",
+	traceId: "TID-unknown",
+	description: "Something went wrong, please contact your System Admin.",
+	path: "/api/v1/unknown-path",
+	timestamp: new Date().toISOString(),
 };

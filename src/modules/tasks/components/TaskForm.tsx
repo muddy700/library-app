@@ -1,7 +1,7 @@
 import React, { FormEvent, useState } from "react";
 import { Success, Validation } from "@lims/shared/types";
 import { TaskDto, TaskSchema } from "../schemas";
-import { apiService, formService } from "@lims/shared/services";
+import { apiService, formService, utilService } from "@lims/shared/services";
 import { DataDrawer, InputError } from "@lims/shared/components";
 import { Button, Input } from "@material-tailwind/react";
 import { ZodError } from "zod";
@@ -31,7 +31,7 @@ export const TaskForm = ({ toggleVisibility, handleSuccess }: TaskFormProps) => 
 
 		setIsLoading(false);
 
-		if (response) {
+		if (utilService.isSuccess(response)) {
 			toggleVisibility(false);
 			handleSuccess(response);
 		}
@@ -73,7 +73,16 @@ export const TaskForm = ({ toggleVisibility, handleSuccess }: TaskFormProps) => 
 
 				{/* Duration */}
 				<div>
-					<Input label="Maximum Duration" name="maxDuration" type="number" onChange={handleFormChanges} color="teal" size="lg" error={formService.hasError("maxDuration", formErrors)} required/>
+					<Input
+						label="Maximum Duration"
+						name="maxDuration"
+						type="number"
+						onChange={handleFormChanges}
+						color="teal"
+						size="lg"
+						error={formService.hasError("maxDuration", formErrors)}
+						required
+					/>
 					<InputError show={formService.hasError("maxDuration", formErrors)} message={formService.getErrorMessage("maxDuration", formErrors)} />
 				</div>
 

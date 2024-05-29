@@ -5,7 +5,7 @@ import { TaskForm } from "./TaskForm";
 import { DataTable, ErrorBanner, Loader, SuccessBanner } from "@lims/shared/components";
 import { UpdateTaskForm } from "./UpdateTaskForm";
 import { Error, NavigationPath, Success, TableActionEnum, TableColumn } from "@lims/shared/types";
-import { apiService } from "@lims/shared/services";
+import { apiService, utilService } from "@lims/shared/services";
 import { Page } from "@lims/shared/layouts";
 
 export const TaskList = () => {
@@ -29,11 +29,10 @@ export const TaskList = () => {
 	const navPaths: NavigationPath[] = [{ label: "todos" }, { label: "list" }];
 
 	const fetchTasks = async () => {
-		setErrorResponse(undefined);
-		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 9 });
+		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 8 });
 
 		setIsLoading(false);
-		if (response) setTasks(response.items);
+		if (utilService.isPage(response)) setTasks(response.items);
 	};
 
 	const viewTaskDetails = (taskId: number): void => {
@@ -71,7 +70,7 @@ export const TaskList = () => {
 			const response = await apiService.remove<Success>("/tasks/" + taskId);
 
 			setIsLoading(false);
-			if (response) setSuccessResponse(response);
+			if (utilService.isSuccess(response)) setSuccessResponse(response);
 		}, 1000);
 	};
 
@@ -93,10 +92,10 @@ export const TaskList = () => {
 	return (
 		<Page title="Tasks" subTitle="Manage your todos" paths={navPaths} isLoading={isLoading}>
 			{/* Success Banner */}
-			{successResponse && <SuccessBanner data={successResponse} actionHandler={handleSuccessActions} />}
+			<SuccessBanner data={successResponse} actionHandler={handleSuccessActions} />
 
 			{/* Error Banner */}
-			{errorResponse && <ErrorBanner data={errorResponse} />}
+			<ErrorBanner data={errorResponse} onClose={() => setErrorResponse(undefined)} />
 
 			{/* Task Details */}
 			{showTaskDetails && activeTaskId && <TaskDetails taskId={activeTaskId} toggleTaskDetails={setShowTaskDetails} handleSuccess={setSuccessResponse} onEdit={handleTaskEdition} />}
@@ -105,13 +104,15 @@ export const TaskList = () => {
 			{showTaskForm && <TaskForm toggleVisibility={setShowTaskForm} handleSuccess={setSuccessResponse} />}
 
 			{/* Update Task Form */}
-			{showUpdateTaskForm && activeTaskId && <UpdateTaskForm toggleVisibility={setShowUpdateTaskForm} handleSuccess={setSuccessResponse} taskId={activeTaskId} />}
+			{showUpdateTaskForm && activeTaskId && (
+				<UpdateTaskForm toggleVisibility={setShowUpdateTaskForm} handleSuccess={setSuccessResponse} taskId={activeTaskId} handleFailure={setErrorResponse} />
+			)}
 
 			{/* Todos list */}
-			{!isLoading && <DataTable<BaseTask> columns={tableColumns} data={tasks} actionHandler={handleTableActions} entityName="Task" actions={tableActions} />}
+			<DataTable<BaseTask> columns={tableColumns} data={tasks} actionHandler={handleTableActions} entityName="Task" actions={tableActions} isLoading={isLoading} />
 
 			{/* Loader */}
-			{isLoading && <Loader />}
+			<Loader isLoading={isLoading} />
 		</Page>
 	);
 };

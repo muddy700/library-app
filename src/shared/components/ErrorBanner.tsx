@@ -1,44 +1,28 @@
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import { DialogHeader, Typography, DialogBody, DialogFooter, Button } from "@material-tailwind/react";
 import { useState } from "react";
-import { Error, GlobalError, Validation } from "../types";
+import { Error, Validation } from "../types";
 import { DataDialog } from "./DataDialog";
+import { variant } from "@material-tailwind/react/types/components/typography";
 
 type BannerProps = {
-	data: Error;
+	data?: Error;
+	onClose: () => void;
 };
 
-export const ErrorBanner = ({ data }: BannerProps) => {
+export const ErrorBanner = ({ data, onClose }: BannerProps) => {
 	const [isOpen, setIsOpen] = useState<boolean>(true);
-	if (!data.timestamp && !data.path) {
-		const newError: GlobalError = data as unknown as GlobalError;
 
-		return (
-			<DataDialog className="flex flex-col items-center border-t-8 border-red-400" size="md" isOpen={isOpen}>
-				<DialogHeader className="flex flex-col text-red-400">
-					<XCircleIcon className="h-20 w-20" />
-					<Typography variant="h4">{data.title}</Typography>
-				</DialogHeader>
-				<DialogBody className="font-normal">
-					<div>
-						<b>Error Code:</b> {newError.status}
-					</div>
-					<div>
-						<b>API:</b> {newError.instance}
-					</div>
-					<div>
-						<b>Description: </b>
-						{newError.detail}
-					</div>
-				</DialogBody>
-				<DialogFooter>
-					<Button onClick={() => setIsOpen(false)} className="bg-secondary-500">
-						Ok
-					</Button>
-				</DialogFooter>
-			</DataDialog>
-		);
-	}
+	const rowClasses: string = "flex gap-5 border-b-2 py-3";
+	const keyVariant: variant = "h6";
+	const valueClasses: string = "font-normal";
+
+	const clickHandler = () => {
+		setIsOpen(false);
+		onClose();
+	};
+
+	if (!data) return;
 
 	return (
 		<DataDialog className="flex flex-col items-center border-t-8 border-red-400" size="md" isOpen={isOpen}>
@@ -47,18 +31,21 @@ export const ErrorBanner = ({ data }: BannerProps) => {
 				<Typography variant="h4">{data.title}</Typography>
 			</DialogHeader>
 			<DialogBody className="font-normal">
-				<div>
-					<b>Trace ID:</b> {data.traceId}
+				<div className={rowClasses}>
+					<Typography variant={keyVariant}>Trace ID: </Typography>
+					<Typography className={valueClasses}>{data.traceId}</Typography>
 				</div>
-				<div>
-					<b>Error Code :</b> {data.status}
+				<div className={rowClasses}>
+					<Typography variant={keyVariant}>Error Code: </Typography>
+					<Typography className={valueClasses}>{data.status}</Typography>
 				</div>
-				<div>
-					<b>API:</b> {data.path}
+				<div className={rowClasses}>
+					<Typography variant={keyVariant}>API: </Typography>
+					<Typography className={valueClasses}>{data.path}</Typography>
 				</div>
-				<div>
-					<b>Description: </b>
-					{data.description}
+				<div className={rowClasses}>
+					<Typography variant={keyVariant}>Description: </Typography>
+					<Typography className={valueClasses + " text-red-400/90"}>{data.description}</Typography>
 				</div>
 				{data.validations && (
 					<div>
@@ -74,7 +61,7 @@ export const ErrorBanner = ({ data }: BannerProps) => {
 				)}
 			</DialogBody>
 			<DialogFooter>
-				<Button onClick={() => setIsOpen(false)} className="bg-secondary-500">
+				<Button onClick={() => clickHandler()} className="bg-secondary-500">
 					Ok
 				</Button>
 			</DialogFooter>
