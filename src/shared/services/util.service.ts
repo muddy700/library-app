@@ -1,5 +1,4 @@
 import { Success, Error, Page, PrimaryData } from "../types";
-// TODO: Write descriptions for the functions below
 
 export const isSuccess = (response: Success | Error): response is Success => "resourceId" in response && "message" in response;
 
@@ -7,8 +6,18 @@ export const isPage = <T>(response: Page<T> | Error): response is Page<T> => "it
 
 export const isValidData = <T extends PrimaryData>(response: T | Error): response is T => "id" in response;
 
-// TODO: Modify the funtion below to replace the above functions
-// export const isError = (response: Error | any): response is Error => "traceId" in response && "path" in response && "timestamp" in response;
+export const encode = (data: string) => btoa(data);
+
+export const decode = (encodedInfo: string) => atob(encodedInfo);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isNull = (value: any) => [null, undefined, ""].includes(value);
+
+export const pauseExecution = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+export const constants = {
+	AUTH_INFO: "AUTH_INFO",
+};
 
 /**
  * Create: POST => Success ===> resourceId

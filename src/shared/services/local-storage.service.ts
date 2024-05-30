@@ -1,13 +1,14 @@
-// const appKey: string = "LIMS_";
+//* Data flow: (array/object) => JSON-String => encoded
+import { utilService } from ".";
 
-const add = (): void => {};
+const getKey = (subKey: string) => "LIMS_" + subKey;
 
-const get = <T>(): T => {
-	const value: T = "" as T;
+export const save = (subKey: string, value: string) => localStorage.setItem(getKey(subKey), utilService.encode(value));
 
-	return value;
+export const get = <T>(subKey: string) => {
+	const value = localStorage.getItem(getKey(subKey));
+
+	return value !== null ? (JSON.parse(utilService.decode(value)) as T) : value;
 };
 
-const remove = (): void => {};
-
-export { add, get, remove };
+export const remove = (subKey: string) => localStorage.removeItem(getKey(subKey));

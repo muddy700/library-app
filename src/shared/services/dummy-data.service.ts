@@ -1,5 +1,5 @@
-import { BaseUser, User } from "@lims/modules/users/types";
-import { Error } from "../types";
+import { BaseUser, Error, User } from "../types";
+import { LoginDto } from "@lims/modules/auth/schemas";
 
 export const initialUsers: BaseUser[] = [
 	{
@@ -167,3 +167,5 @@ export const unknownError: Error = {
 	path: "/api/v1/unknown-path",
 	timestamp: new Date().toISOString(),
 };
+
+export const loginInfo: LoginDto = { email: "mohamedmfaume700@gmail.com", password: "Pass@12" };

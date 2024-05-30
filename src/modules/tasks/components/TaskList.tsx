@@ -16,7 +16,7 @@ export const TaskList = () => {
 	const [showUpdateTaskForm, setShowUpdateTaskForm] = useState<boolean>(false);
 	const [successResponse, setSuccessResponse] = useState<Success | undefined>();
 	const [errorResponse, setErrorResponse] = useState<Error | undefined>();
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	const { NEW, FILTER, SEARCH, VIEW, UPDATE, DELETE } = TableActionEnum;
 	const tableActions = [NEW, FILTER, SEARCH, VIEW, UPDATE, DELETE];
@@ -27,13 +27,6 @@ export const TaskList = () => {
 	];
 
 	const navPaths: NavigationPath[] = [{ label: "todos" }, { label: "list" }];
-
-	const fetchTasks = async () => {
-		const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 8 });
-
-		setIsLoading(false);
-		if (utilService.isPage(response)) setTasks(response.items);
-	};
 
 	const viewTaskDetails = (taskId: number): void => {
 		setActiveTaskId(taskId);
@@ -56,22 +49,21 @@ export const TaskList = () => {
 		setSuccessResponse(undefined);
 	};
 
-	const callHim = () => {
-		setIsLoading(true);
-		setTimeout(() => fetchTasks(), 1000);
-	};
-
-	useEffect(() => callHim(), []);
-
-	const handleTaskDeletion = (taskId: number): void => {
-		setIsLoading(true);
-
-		setTimeout(async () => {
-			const response = await apiService.remove<Success>("/tasks/" + taskId);
+	useEffect(() => {
+		(async () => {
+			const response = await apiService.getWithQuery<BaseTask>("/tasks", { size: 8 });
 
 			setIsLoading(false);
-			if (utilService.isSuccess(response)) setSuccessResponse(response);
-		}, 1000);
+			if (utilService.isPage(response)) setTasks(response.items);
+		})();
+	}, []);
+
+	const handleTaskDeletion = async (taskId: number) => {
+		setIsLoading(true);
+		const response = await apiService.remove<Success>("/tasks/" + taskId);
+
+		setIsLoading(false);
+		if (utilService.isSuccess(response)) setSuccessResponse(response);
 	};
 
 	const handleTaskEdition = (taskId: number): void => {
@@ -90,7 +82,7 @@ export const TaskList = () => {
 	};
 
 	return (
-		<Page title="Tasks" subTitle="Manage your todos" paths={navPaths} isLoading={isLoading}>
+		<Page title="Tasks" subTitle="Manage your todos" paths={navPaths}>
 			{/* Success Banner */}
 			<SuccessBanner data={successResponse} actionHandler={handleSuccessActions} />
 

@@ -7,11 +7,11 @@ type PageProps = {
 	title: string;
 	subTitle: string;
 	paths: NavigationPath[];
-	isLoading?: boolean;
 	children: ReactNode;
+	className?: string;
 };
 
-export const Page = ({ title, subTitle, paths, isLoading = false, children }: PageProps) => {
+export const Page = ({ title, subTitle, paths, children, className }: PageProps) => {
 	return (
 		<div className="w-full bg-secondary-200 p-2">
 			<div className="flex justify-between">
@@ -33,7 +33,7 @@ export const Page = ({ title, subTitle, paths, isLoading = false, children }: Pa
 						))}
 				</Breadcrumbs>
 			</div>
-			<div className="pt-10">{children}</div>
+			<div className={"pt-10 " + className}>{children}</div>
 		</div>
 	);
 };

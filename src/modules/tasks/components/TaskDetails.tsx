@@ -18,35 +18,27 @@ export const TaskDetails = ({ taskId, toggleTaskDetails, handleSuccess, onEdit }
 	const subTitle: string = `Details for Task with ID: ${taskId}`;
 
 	const [taskInfo, setTaskInfo] = useState<Task>();
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
-	const fetchTaskInfo = async () => {
-		const response = await apiService.getById<Task>("/tasks/" + taskId);
-
-		setIsLoading(false);
-		if (utilService.isValidData(response)) setTaskInfo(response);
-	};
-
-	const callHim = () => {
-		setIsLoading(true);
-		setTimeout(() => fetchTaskInfo(), 1000);
-	};
-
-	useEffect(() => callHim(), [taskId]);
-
-	const deleteTask = (): void => {
-		setIsLoading(true);
-
-		setTimeout(async () => {
-			const response = await apiService.remove<Success>("/tasks/" + taskId);
+	useEffect(() => {
+		(async () => {
+			const response = await apiService.getById<Task>("/tasks/" + taskId);
 
 			setIsLoading(false);
+			if (utilService.isValidData(response)) setTaskInfo(response);
+		})();
+	}, [taskId]);
 
-			if (utilService.isSuccess(response)) {
-				toggleTaskDetails(false);
-				handleSuccess(response);
-			}
-		}, 1000);
+	const deleteTask = async () => {
+		setIsLoading(true);
+		const response = await apiService.remove<Success>("/tasks/" + taskId);
+
+		setIsLoading(false);
+
+		if (utilService.isSuccess(response)) {
+			toggleTaskDetails(false);
+			handleSuccess(response);
+		}
 	};
 
 	const getStatus = (): string => {

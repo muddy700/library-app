@@ -27,6 +27,7 @@ export const TaskForm = ({ toggleVisibility, handleSuccess }: TaskFormProps) => 
 	};
 
 	const saveTaskInfo = async () => {
+		setIsLoading(true);
 		const response = await apiService.post<Success, TaskDto>("/tasks", taskPayload);
 
 		setIsLoading(false);
@@ -43,8 +44,7 @@ export const TaskForm = ({ toggleVisibility, handleSuccess }: TaskFormProps) => 
 		try {
 			TaskSchema.parse({ ...taskPayload, maxDuration: Number(taskPayload.maxDuration) });
 
-			setIsLoading(true);
-			setTimeout(() => saveTaskInfo(), 1000);
+			saveTaskInfo();
 		} catch (error) {
 			setFormErrors(formService.extractErrors(error as ZodError));
 		}

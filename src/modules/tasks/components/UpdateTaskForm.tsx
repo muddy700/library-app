@@ -14,30 +14,25 @@ type UpdateTaskFormProps = {
 };
 
 export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId, handleFailure }: UpdateTaskFormProps) => {
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [isUpdating, setIsUpdating] = useState<boolean>(false);
 	const [taskPayload, setTaskPayload] = useState<UpdateTaskDto>({} as UpdateTaskDto);
 
 	const title: string = "Task Form";
 	const subTitle: string = "Edit the form below to update Task details.";
 
-	const fetchTaskInfo = async () => {
-		const response = await apiService.getById<Task>("/tasks/" + taskId);
+	useEffect(() => {
+		(async () => {
+			const response = await apiService.getById<Task>("/tasks/" + taskId);
 
-		setIsLoading(false);
+			setIsLoading(false);
 
-		if (utilService.isValidData(response)) {
-			const { title, maxDuration, published } = response;
-			setTaskPayload({ title, maxDuration, published });
-		}
-	};
-
-	const callHim = () => {
-		setIsLoading(true);
-		setTimeout(() => fetchTaskInfo(), 1000);
-	};
-
-	useEffect(() => callHim(), [taskId]);
+			if (utilService.isValidData(response)) {
+				const { title, maxDuration, published } = response;
+				setTaskPayload({ title, maxDuration, published });
+			}
+		})();
+	}, [taskId]);
 
 	const handleFormChanges = (e: React.FormEvent<HTMLInputElement>) => {
 		const { name, value } = e.currentTarget;
@@ -45,6 +40,7 @@ export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId, handle
 	};
 
 	const UpdateTaskInfo = async () => {
+		setIsUpdating(true);
 		const response = await apiService.patch<Success, UpdateTaskDto>("/tasks/" + taskId, { ...taskPayload, published: true });
 
 		setIsUpdating(false);
@@ -57,9 +53,7 @@ export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId, handle
 
 	const handleFormSubmission = (e: FormEvent<HTMLFormElement>): void => {
 		e.preventDefault();
-		setIsUpdating(true);
-
-		setTimeout(() => UpdateTaskInfo(), 1000);
+		UpdateTaskInfo();
 	};
 
 	return (

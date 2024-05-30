@@ -2,9 +2,11 @@ import { Bars3Icon, BellIcon } from "@heroicons/react/24/outline";
 import { Typography, IconButton, Badge } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import { ProfileMenu } from "./ProfileMenu";
+import { authService } from "../services";
 
 export const TopBar = () => {
 	const navigate = useNavigate();
+	const user = authService.getPrincipal();
 
 	return (
 		<div className="bg-primary-900 flex justify-between items-center text-white p-1 pl-6">
@@ -26,7 +28,7 @@ export const TopBar = () => {
 				</Badge>
 
 				{/* User name */}
-				<Typography className="ml-5 font-medium">Mohamed Mfaume</Typography>
+				<Typography className="ml-5 font-medium">{user?.fullName ?? "Guest User"}</Typography>
 
 				{/* Profile menu */}
 				<ProfileMenu />

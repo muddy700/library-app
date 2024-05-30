@@ -8,11 +8,11 @@ export default defineConfig({
 	server: {
 		port: 3000,
 		proxy: {
-			"/library-mvp-api": {
+			"/lims-api": {
 				target: "http://127.0.0.1:8000",
 				changeOrigin: true,
 				secure: false,
-				rewrite: (path: string) => path.replace(/^\/library-mvp-api/, "api"),
+				rewrite: (path: string) => path.replace(/^\/lims-api/, "api"),
 			},
 		},
 	},

@@ -1,8 +1,13 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { Error, Page, QueryParams } from "../types";
-import { dummyDataService } from ".";
+import { dummyDataService, utilService } from ".";
 
-const axiosInstance = axios.create({ baseURL: "library-mvp-api/v1" });
+const waitingTime: number = 1000;
+const baseURL: string = "/lims-api/v1";
+// const baseURL: string = "http://127.0.0.1:8000/api/v1";
+// const headers = { Authorization: "Bearer " + authService.getToken() };
+
+const axiosInstance = axios.create({ baseURL });
 
 // Types declaration
 type SystemError = {
@@ -14,6 +19,8 @@ type SystemError = {
 };
 
 export const getAll = async <T>(endpoint: string) => {
+	await utilService.pauseExecution(waitingTime);
+
 	try {
 		return (await axiosInstance.get<Page<T>>(endpoint)).data;
 	} catch (error) {
@@ -22,6 +29,8 @@ export const getAll = async <T>(endpoint: string) => {
 };
 
 export const getWithQuery = async <T>(endpoint: string, params: QueryParams) => {
+	await utilService.pauseExecution(waitingTime);
+
 	try {
 		return (await axiosInstance.get<Page<T>>(endpoint, { params })).data;
 	} catch (error) {
@@ -30,6 +39,8 @@ export const getWithQuery = async <T>(endpoint: string, params: QueryParams) => 
 };
 
 export const getById = async <T>(endpoint: string) => {
+	await utilService.pauseExecution(waitingTime);
+
 	try {
 		return (await axiosInstance.get<T>(endpoint)).data;
 	} catch (error) {
@@ -45,6 +56,8 @@ export const getById = async <T>(endpoint: string) => {
  * @returns
  */
 export const post = async <T, D>(endpoint: string, payload: D) => {
+	await utilService.pauseExecution(waitingTime);
+
 	try {
 		return (await axiosInstance.post<T, AxiosResponse<T, D>, D>(endpoint, payload)).data;
 	} catch (error) {
@@ -53,6 +66,8 @@ export const post = async <T, D>(endpoint: string, payload: D) => {
 };
 
 export const patch = async <T, D>(endpoint: string, payload: D) => {
+	await utilService.pauseExecution(waitingTime);
+
 	try {
 		return (await axiosInstance.patch<T, AxiosResponse<T, D>, D>(endpoint, payload)).data;
 	} catch (error) {
@@ -61,6 +76,8 @@ export const patch = async <T, D>(endpoint: string, payload: D) => {
 };
 
 export const remove = async <T>(endpoint: string) => {
+	await utilService.pauseExecution(waitingTime);
+
 	try {
 		return (await axiosInstance.delete<T>(endpoint)).data;
 	} catch (error) {
