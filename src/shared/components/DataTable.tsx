@@ -1,11 +1,12 @@
 import { Button, Card, CardBody, CardFooter, Chip, IconButton, Input, Typography } from "@material-tailwind/react";
-import { PrimaryData, TableActionEnum, TableColumn } from "../types";
+import { PrimaryData, TableColumn } from "../types";
 import { TableHead } from "./TableHead";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import { FunnelIcon, MagnifyingGlassIcon, PencilSquareIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
 import { colors } from "@material-tailwind/react/types/generic";
 import { TableSkeleton } from "./TableSkeleton";
+import { TableActionEnum } from "../enums";
 
 type TableProps<T> = {
 	columns?: TableColumn[];
@@ -48,9 +49,7 @@ export const DataTable = <T extends PrimaryData>({
 		return actions.some((action) => eligibleActions.includes(action));
 	};
 
-	const isVisible = (actionId: TableActionEnum): boolean => {
-		return actions.find((action) => action === actionId) ? true : false;
-	};
+	const isVisible = (actionId: TableActionEnum) => (actions.find((action) => action === actionId) ? true : false);
 
 	const getBooleanValue = (column: TableColumn, row: T): string => {
 		return ((row[column.fieldName as never] as boolean) ? column.options?.valid : column.options?.invalid) as string;

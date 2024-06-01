@@ -1,9 +1,9 @@
+import { User } from "@lims/shared/types";
 import { Card, CardHeader, CardBody, Typography, CardFooter, Button } from "@material-tailwind/react";
-import { User } from "../types";
 import { variant } from "@material-tailwind/react/types/components/typography";
 
 type ProfileProps = {
-	data: User;
+	data?: User;
 };
 
 export const ProfileInfo = ({ data }: ProfileProps) => {
@@ -14,6 +14,8 @@ export const ProfileInfo = ({ data }: ProfileProps) => {
 
 	const formatDate = (dt?: string): string => dt?.split("T")[0] ?? "--";
 
+	if (!data) return;
+
 	return (
 		<div className="flex gap-5">
 			<Card className="w-96">
@@ -21,7 +23,7 @@ export const ProfileInfo = ({ data }: ProfileProps) => {
 					<img src="https://docs.material-tailwind.com/img/team-3.jpg" alt="profile-picture" />
 				</CardHeader>
 				<CardBody className="text-center">
-					<Typography variant="h4" color="blue-gray" className="mb-2">
+					<Typography variant="h5" color="blue-gray" className="mb-2">
 						{data.fullName}
 					</Typography>
 					<Typography color="blue-gray" className="font-medium" textGradient>

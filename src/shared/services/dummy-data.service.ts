@@ -1,4 +1,5 @@
-import { BaseUser, Error, User } from "../types";
+import { UserDto } from "@lims/modules/users/schemas";
+import { BaseUser, Error, Success, User } from "../types";
 import { LoginDto } from "@lims/modules/auth/schemas";
 
 export const initialUsers: BaseUser[] = [
@@ -169,3 +170,13 @@ export const unknownError: Error = {
 };
 
 export const loginInfo: LoginDto = { email: "mohamedmfaume700@gmail.com", password: "Pass@12" };
+
+export const userForm: UserDto = {
+	fullName: "Magdalena Nchimbi",
+	email: "maggie.nchimbi@gmail.com",
+	phoneNumber: "789101112",
+	roleId: "2031233d-0037-45c3-bbc6-042a1f5a3545",
+	gender: "F",
+};
+
+export const successInfo: Success = { message: "User created successfully.", resourceId: "e619159e-9253-4ccd-a71a-308049637430" };

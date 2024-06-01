@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { BaseTask } from "../types";
 import { TaskDetails } from "./TaskDetails";
 import { TaskForm } from "./TaskForm";
-import { DataTable, ErrorBanner, Loader, SuccessBanner } from "@lims/shared/components";
+import { DataTable, SuccessBanner } from "@lims/shared/components";
 import { UpdateTaskForm } from "./UpdateTaskForm";
-import { Error, NavigationPath, Success, TableActionEnum, TableColumn } from "@lims/shared/types";
+import { Error, NavigationPath, Success, TableColumn } from "@lims/shared/types";
 import { apiService, utilService } from "@lims/shared/services";
 import { Page } from "@lims/shared/layouts";
+import { SuccessActionEnum, TableActionEnum } from "@lims/shared/enums";
 
 export const TaskList = () => {
 	const [tasks, setTasks] = useState<BaseTask[]>([]);
@@ -21,6 +22,9 @@ export const TaskList = () => {
 	const { NEW, FILTER, SEARCH, VIEW, UPDATE, DELETE } = TableActionEnum;
 	const tableActions = [NEW, FILTER, SEARCH, VIEW, UPDATE, DELETE];
 
+	const { ADD_NEW, VIEW_RESOURCE, LIST_RESOURCES } = SuccessActionEnum;
+	const successActions = [ADD_NEW, VIEW_RESOURCE, LIST_RESOURCES];
+
 	const tableColumns: TableColumn[] = [
 		{ label: "Title", fieldName: "title" },
 		{ label: "Created At", fieldName: "createdAt", dataType: "date" },
@@ -33,17 +37,17 @@ export const TaskList = () => {
 		setShowTaskDetails(true);
 	};
 
-	const handleSuccessActions = (actionId: number): void => {
-		if (actionId === 1) {
+	const handleSuccessActions = (actionId: SuccessActionEnum): void => {
+		if (actionId === VIEW_RESOURCE) {
 			// View created Task
 			viewTaskDetails(successResponse?.resourceId as unknown as number);
-		} else if (actionId === 2) {
+		} else if (actionId === ADD_NEW) {
 			// Add new Task
 			setShowTaskForm(true);
-		} else {
+		} else if (actionId === LIST_RESOURCES) {
 			// Show Todos List
 			location.reload();
-		}
+		} else console.log("Success Action Not Found!");
 
 		// Remove Success Banner
 		setSuccessResponse(undefined);
@@ -82,12 +86,9 @@ export const TaskList = () => {
 	};
 
 	return (
-		<Page title="Tasks" subTitle="Manage your todos" paths={navPaths}>
+		<Page title="Tasks" subTitle="Manage your todos" paths={navPaths} errorInfo={errorResponse} onCloseErrorDialog={setErrorResponse}>
 			{/* Success Banner */}
-			<SuccessBanner data={successResponse} actionHandler={handleSuccessActions} />
-
-			{/* Error Banner */}
-			<ErrorBanner data={errorResponse} onClose={() => setErrorResponse(undefined)} />
+			<SuccessBanner data={successResponse} actionHandler={handleSuccessActions} entityName="Todo" actions={successActions} />
 
 			{/* Task Details */}
 			{showTaskDetails && activeTaskId && <TaskDetails taskId={activeTaskId} toggleTaskDetails={setShowTaskDetails} handleSuccess={setSuccessResponse} onEdit={handleTaskEdition} />}
@@ -102,9 +103,6 @@ export const TaskList = () => {
 
 			{/* Todos list */}
 			<DataTable<BaseTask> columns={tableColumns} data={tasks} actionHandler={handleTableActions} entityName="Task" actions={tableActions} isLoading={isLoading} />
-
-			{/* Loader */}
-			<Loader isLoading={isLoading} />
 		</Page>
 	);
 };

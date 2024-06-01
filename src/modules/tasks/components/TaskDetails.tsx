@@ -22,7 +22,7 @@ export const TaskDetails = ({ taskId, toggleTaskDetails, handleSuccess, onEdit }
 
 	useEffect(() => {
 		(async () => {
-			const response = await apiService.getById<Task>("/tasks/" + taskId);
+			const response = await apiService.getById<Task>("/tasks", taskId.toString());
 
 			setIsLoading(false);
 			if (utilService.isValidData(response)) setTaskInfo(response);

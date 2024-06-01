@@ -1,13 +1,25 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { Error, Page, QueryParams } from "../types";
-import { dummyDataService, utilService } from ".";
+import { authService, dummyDataService, utilService } from ".";
 
-const waitingTime: number = 1000;
-const baseURL: string = "/lims-api/v1";
-// const baseURL: string = "http://127.0.0.1:8000/api/v1";
-// const headers = { Authorization: "Bearer " + authService.getToken() };
+const waitingTime: number = 1500;
 
-const axiosInstance = axios.create({ baseURL });
+const defaultConfigs = {
+	baseURL: "/lims-api/v1",
+	headers: {
+		"Content-Type": "application/json",
+	},
+};
+
+const axiosInstance = axios.create(defaultConfigs);
+
+// Append auth header
+axiosInstance.interceptors.request.use((config) => {
+	const token = authService.getToken();
+	config.headers.Authorization = token ? "Bearer " + token : "";
+
+	return config;
+});
 
 // Types declaration
 type SystemError = {
@@ -38,11 +50,11 @@ export const getWithQuery = async <T>(endpoint: string, params: QueryParams) => 
 	}
 };
 
-export const getById = async <T>(endpoint: string) => {
+export const getById = async <T>(endpoint: string, resourceId: string) => {
 	await utilService.pauseExecution(waitingTime);
 
 	try {
-		return (await axiosInstance.get<T>(endpoint)).data;
+		return (await axiosInstance.get<T>(endpoint + "/" + resourceId)).data;
 	} catch (error) {
 		return handleError(error);
 	}
@@ -65,11 +77,11 @@ export const post = async <T, D>(endpoint: string, payload: D) => {
 	}
 };
 
-export const patch = async <T, D>(endpoint: string, payload: D) => {
+export const put = async <T, D>(endpoint: string, payload: D) => {
 	await utilService.pauseExecution(waitingTime);
 
 	try {
-		return (await axiosInstance.patch<T, AxiosResponse<T, D>, D>(endpoint, payload)).data;
+		return (await axiosInstance.put<T, AxiosResponse<T, D>, D>(endpoint, payload)).data;
 	} catch (error) {
 		return handleError(error);
 	}
@@ -92,7 +104,8 @@ const handleError = (error: unknown) => {
 	if (responseError) {
 		const { data, status } = responseError;
 
-		if (data.timestamp && data.path) errorInfo = { ...data, status };
+		if (utilService.isNull(data) && status === 403) errorInfo = getForbiddenError(responseError);
+		else if (data.timestamp && data.path) errorInfo = { ...data, status };
 		else {
 			const { detail: description, instance: path, title } = data as unknown as SystemError;
 			errorInfo = { ...errorInfo, status, title, description, path };
@@ -100,4 +113,14 @@ const handleError = (error: unknown) => {
 	} else console.log("Request Error: ", requestError);
 
 	return errorInfo;
+};
+
+const getForbiddenError = (response: AxiosResponse) => {
+	return {
+		status: response.status,
+		title: response.statusText,
+		description: "You're not authorized to view this resource(s).",
+		path: "/api/v1" + response.config.url,
+		traceId: "TID-forbidden",
+	} as Error;
 };

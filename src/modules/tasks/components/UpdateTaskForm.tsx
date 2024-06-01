@@ -41,7 +41,7 @@ export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId, handle
 
 	const UpdateTaskInfo = async () => {
 		setIsUpdating(true);
-		const response = await apiService.patch<Success, UpdateTaskDto>("/tasks/" + taskId, { ...taskPayload, published: true });
+		const response = await apiService.put<Success, UpdateTaskDto>("/tasks/" + taskId, { ...taskPayload, published: true });
 
 		setIsUpdating(false);
 

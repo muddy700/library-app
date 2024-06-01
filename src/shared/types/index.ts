@@ -8,9 +8,9 @@ export type { PrimaryData } from "./PrimaryData";
 export type { CreationData } from "./CreationData";
 export type { UpdationData } from "./UpdationData";
 export type { BaseData } from "./BaseData";
-export { TableActionEnum } from "./TableAction";
 export type { NavigationPath } from "./NavigationPath";
 export type { Permission } from "./Permission";
 export type { Role } from "./Role";
-export type { BaseUser} from './BaseUser'
-export type { User} from './User'
+export type { BaseUser } from "./BaseUser";
+export type { User } from "./User";
+export type { InputOption } from "./InputOption";

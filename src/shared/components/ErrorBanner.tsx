@@ -1,31 +1,23 @@
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import { DialogHeader, Typography, DialogBody, DialogFooter, Button } from "@material-tailwind/react";
-import { useState } from "react";
 import { Error, Validation } from "../types";
 import { DataDialog } from "./DataDialog";
 import { variant } from "@material-tailwind/react/types/components/typography";
 
 type BannerProps = {
 	data?: Error;
-	onClose: () => void;
+	onClose?: () => void;
 };
 
-export const ErrorBanner = ({ data, onClose }: BannerProps) => {
-	const [isOpen, setIsOpen] = useState<boolean>(true);
-
+export const ErrorBanner = ({ data, onClose = () => console.log("Error Dialog Closed.") }: BannerProps) => {
 	const rowClasses: string = "flex gap-5 border-b-2 py-3";
 	const keyVariant: variant = "h6";
 	const valueClasses: string = "font-normal";
 
-	const clickHandler = () => {
-		setIsOpen(false);
-		onClose();
-	};
-
 	if (!data) return;
 
 	return (
-		<DataDialog className="flex flex-col items-center border-t-8 border-red-400" size="md" isOpen={isOpen}>
+		<DataDialog className="flex flex-col items-center border-t-8 border-red-400" size="md">
 			<DialogHeader className="flex flex-col text-red-400">
 				<XCircleIcon className="h-20 w-20" />
 				<Typography variant="h4">{data.title}</Typography>
@@ -47,7 +39,7 @@ export const ErrorBanner = ({ data, onClose }: BannerProps) => {
 					<Typography variant={keyVariant}>Description: </Typography>
 					<Typography className={valueClasses + " text-red-400/90"}>{data.description}</Typography>
 				</div>
-				{data.validations && (
+				{data.validations && data.validations.length > 0 && (
 					<div>
 						<b>Validations: </b>
 						<div className="pl-10">
@@ -61,7 +53,7 @@ export const ErrorBanner = ({ data, onClose }: BannerProps) => {
 				)}
 			</DialogBody>
 			<DialogFooter>
-				<Button onClick={() => clickHandler()} className="bg-secondary-500">
+				<Button onClick={() => onClose()} className="bg-secondary-500">
 					Ok
 				</Button>
 			</DialogFooter>

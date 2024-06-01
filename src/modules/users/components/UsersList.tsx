@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { BaseUser } from "../types";
 import { DataTable } from "@lims/shared/components";
-import { NavigationPath, TableActionEnum, TableColumn } from "@lims/shared/types";
-import { dummyDataService } from "@lims/shared/services";
+import { BaseUser, Error, NavigationPath,  TableColumn } from "@lims/shared/types";
+import { apiService, utilService } from "@lims/shared/services";
 import { Page } from "@lims/shared/layouts";
 import { useNavigate } from "react-router-dom";
+import { TableActionEnum } from "@lims/shared/enums";
 
 export const UsersList = () => {
 	const [users, setUsers] = useState<BaseUser[]>([]);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [errorInfo, setErrorInfo] = useState<Error>();
 
 	const navigate = useNavigate();
 	const { NEW, FILTER, SEARCH, VIEW, UPDATE } = TableActionEnum;
@@ -24,17 +26,26 @@ export const UsersList = () => {
 		{ label: "Status", fieldName: "enabled", dataType: "boolean", options: { valid: "Active", invalid: "Locked" } },
 	];
 
-	useEffect(() => setUsers(dummyDataService.initialUsers), []);
+	useEffect(() => {
+		(async () => {
+			const response = await apiService.getWithQuery<BaseUser>("/users", { size: 8 });
+
+			setIsLoading(false);
+			if (utilService.isPage(response)) setUsers(response.items);
+			else setErrorInfo(response);
+		})();
+	}, []);
 
 	const handleTableActions = (actionId: TableActionEnum, data: unknown): void => {
 		const userId = data as string;
 
 		if (actionId === VIEW) navigate("../" + userId + "/details");
+		else if (actionId === NEW) navigate("../create");
 	};
 
 	return (
-		<Page title="Users" subTitle="Manage system users" paths={navPaths}>
-			<DataTable<BaseUser> columns={tableColumns} data={users} entityName="User" actions={tableActions} actionHandler={handleTableActions} />
+		<Page title="Users" subTitle="Manage system users" paths={navPaths} errorInfo={errorInfo} onCloseErrorDialog={setErrorInfo}>
+			<DataTable<BaseUser> columns={tableColumns} data={users} entityName="User" actions={tableActions} actionHandler={handleTableActions} isLoading={isLoading} />
 		</Page>
 	);
 };

@@ -1,7 +1,8 @@
 import { HomeIcon } from "@heroicons/react/24/solid";
 import { Breadcrumbs, Typography } from "@material-tailwind/react";
 import { ReactNode } from "react";
-import { NavigationPath } from "../types";
+import { Error, NavigationPath } from "../types";
+import { ErrorBanner } from "../components";
 
 type PageProps = {
 	title: string;
@@ -9,11 +10,16 @@ type PageProps = {
 	paths: NavigationPath[];
 	children: ReactNode;
 	className?: string;
+	errorInfo?: Error;
+	onCloseErrorDialog: (value?: Error) => void;
 };
 
-export const Page = ({ title, subTitle, paths, children, className }: PageProps) => {
+export const Page = ({ title, subTitle, paths, children, className, errorInfo, onCloseErrorDialog }: PageProps) => {
+	const clearErrorInfo = () => onCloseErrorDialog(undefined);
+
 	return (
 		<div className="w-full bg-secondary-200 p-2">
+			{/* Page Header: Starts */}
 			<div className="flex justify-between">
 				<div className="flex flex-col text-primary-900">
 					<Typography variant="h4">{title}</Typography>
@@ -33,7 +39,16 @@ export const Page = ({ title, subTitle, paths, children, className }: PageProps)
 						))}
 				</Breadcrumbs>
 			</div>
-			<div className={"pt-10 " + className}>{children}</div>
+			{/* Page Header: Ends */}
+
+			{/* Page Body: Starts */}
+			<div className={"pt-10 " + className}>
+				{/* Error Banner */}
+				<ErrorBanner data={errorInfo} onClose={clearErrorInfo} />
+
+				{children}
+			</div>
+			{/* Page Body: Ends */}
 		</div>
 	);
 };

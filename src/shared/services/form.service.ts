@@ -22,3 +22,17 @@ export const getErrorMessage = (fieldName: string, formErrors: Validation[]) => 
 export const hasError = (fieldName: string, formErrors: Validation[]) => (getItem(fieldName, formErrors) ? true : false);
 
 const getItem = (fieldName: string, formErrors: Validation[]) => formErrors.find((error) => error.fieldName === fieldName);
+
+export const createInputNameFromLabel = (label: string) => {
+	const lableKeys = label.split(" ");
+
+	if (lableKeys.length === 1) return label.toLowerCase();
+
+	let result = lableKeys[0].toLowerCase();
+
+	lableKeys.forEach((key, index) => {
+		if (key && index > 0) result += key;
+	});
+	
+	return result;
+};

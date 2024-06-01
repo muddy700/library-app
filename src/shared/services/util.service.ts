@@ -15,6 +15,13 @@ export const isNull = (value: any) => [null, undefined, ""].includes(value);
 
 export const pauseExecution = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
+export const getEntityPlural = (entityName: string) => {
+	const normalEntities = ["user", "todo", "role", "permission", "book"];
+
+	if (normalEntities.includes(entityName.toLowerCase())) return entityName + "s";
+	else return entityName;
+};
+
 export const constants = {
 	AUTH_INFO: "AUTH_INFO",
 };
