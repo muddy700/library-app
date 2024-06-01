@@ -2,7 +2,8 @@ import { HomeIcon } from "@heroicons/react/24/solid";
 import { Breadcrumbs, Typography } from "@material-tailwind/react";
 import { ReactNode } from "react";
 import { Error, NavigationPath } from "../types";
-import { ErrorBanner } from "../components";
+import { ErrorBanner, Loader, PagePlaceholder } from "../components";
+import { useNavigate } from "react-router-dom";
 
 type PageProps = {
 	title: string;
@@ -12,9 +13,11 @@ type PageProps = {
 	className?: string;
 	errorInfo?: Error;
 	onCloseErrorDialog: (value?: Error) => void;
+	isLoading?: boolean;
 };
 
-export const Page = ({ title, subTitle, paths, children, className, errorInfo, onCloseErrorDialog }: PageProps) => {
+export const Page = ({ title, subTitle, paths, children, className, errorInfo, onCloseErrorDialog, isLoading = false }: PageProps) => {
+	const navigate = useNavigate();
 	const clearErrorInfo = () => onCloseErrorDialog(undefined);
 
 	return (
@@ -28,14 +31,14 @@ export const Page = ({ title, subTitle, paths, children, className, errorInfo, o
 					</Typography>
 				</div>
 				<Breadcrumbs>
-					<a href="/dashboard" className="opacity-60 text-primary-900">
+					<Typography className="opacity-60 text-primary-900" onClick={() => navigate("/dashboard")}>
 						<HomeIcon className="h-4 w-4" />
-					</a>
+					</Typography>
 					{paths.length > 0 &&
 						paths.map((item) => (
-							<a key={item.label} href={`${item?.url ?? "#"}`} className="opacity-60 text-primary-900">
+							<Typography key={item.label} onClick={() => navigate(item?.url ?? "#")} className="opacity-60 text-primary-900">
 								<span>{item.label}</span>
-							</a>
+							</Typography>
 						))}
 				</Breadcrumbs>
 			</div>
@@ -46,7 +49,8 @@ export const Page = ({ title, subTitle, paths, children, className, errorInfo, o
 				{/* Error Banner */}
 				<ErrorBanner data={errorInfo} onClose={clearErrorInfo} />
 
-				{children}
+				{/* Contents */}
+				{isLoading ? <Loader /> : children ?? <PagePlaceholder />}
 			</div>
 			{/* Page Body: Ends */}
 		</div>

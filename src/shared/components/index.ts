@@ -7,3 +7,4 @@ export { InputError } from "./InputError";
 export { DataDialog } from "./DataDialog";
 export { PageNotFound } from "./PageNotFound";
 export { TableSkeleton } from "./TableSkeleton";
+export { PagePlaceholder } from "./PagePlaceholder";

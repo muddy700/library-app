@@ -1,77 +1,173 @@
-import { InboxIcon, LockOpenIcon } from "@heroicons/react/24/outline";
-import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { Page } from "@lims/shared/layouts";
-import { NavigationPath, User } from "@lims/shared/types";
-import { Tab, TabPanel, Tabs, TabsBody, TabsHeader } from "@material-tailwind/react";
-import { ReactNode, useEffect, useState } from "react";
-import { ProfileInfo } from "./ProfileInfo";
+import { Error, NavigationPath, Success, User } from "@lims/shared/types";
+import { useEffect, useState } from "react";
 import { apiService, utilService } from "@lims/shared/services";
-import { useParams } from "react-router-dom";
-
-type DetailsTab = { label: string; value: string; icon: ReactNode; content: ReactNode };
+import { useNavigate, useParams } from "react-router-dom";
+import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Typography } from "@material-tailwind/react";
+import { variant } from "@material-tailwind/react/types/components/typography";
+import { PagePlaceholder, SuccessBanner } from "@lims/shared/components";
+import { SuccessActionEnum } from "@lims/shared/enums";
 
 export const UserDetails = () => {
 	const { userId } = useParams();
 	const [userInfo, setUserInfo] = useState<User>();
+	const [successInfo, setSuccessInfo] = useState<Success>();
+	const [errorInfo, setErrorInfo] = useState<Error>();
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
+	const navigate = useNavigate();
 	const navPaths: NavigationPath[] = [{ label: "users", url: "/users" }, { label: "user-details" }];
 
-	const tabsList: DetailsTab[] = [
-		{
-			label: "Profile",
-			value: "profile",
-			icon: <UserCircleIcon className="w-5 h-5" strokeWidth={2} />,
-			content: <ProfileInfo data={userInfo} />,
-		},
-		{
-			label: "Role",
-			value: "role",
-			icon: <InboxIcon className="w-5 h-5" strokeWidth={2} />,
-			content: <p>Role info</p>,
-		},
-		{
-			label: "Permissions",
-			value: "permissions",
-			icon: <LockOpenIcon className="w-5 h-5" strokeWidth={2} />,
-			content: <p>Permissions Info</p>,
-		},
-	];
+	const { ADD_NEW, VIEW_RESOURCE, LIST_RESOURCES } = SuccessActionEnum;
+	const successActions = [ADD_NEW, VIEW_RESOURCE, LIST_RESOURCES];
+
+	const rowClasses: string = "grid grid-cols-2 border-b-2 pb-3";
+	const columnClasses: string = "flex gap-5";
+	const keyVariant: variant = "h6";
+	const valueClasses: string = "font-normal";
+
+	const formatDate = (dt?: string): string => dt?.split("T")[0] ?? "--";
 
 	useEffect(() => {
 		(async () => {
 			const response = await apiService.getById<User>("/users", userId ?? "--");
+			setIsLoading(false);
 
 			if (utilService.isValidData(response)) setUserInfo(response);
+			else setErrorInfo(response);
 		})();
 	}, [userId]);
 
+	const handleSuccessActions = (actionId: SuccessActionEnum) => {
+		// View details of the updated user
+		if (actionId === VIEW_RESOURCE) navigate("#");
+		// Show user creation form
+		else if (actionId === ADD_NEW) navigate(utilService.routes.createUser);
+		// Show users list
+		else if (actionId === LIST_RESOURCES) navigate(utilService.routes.usersList);
+		else console.log("Success Action Not Found!");
+
+		// Remove Success Banner
+		setSuccessInfo(undefined);
+	};
+
+	const updateUser = async () => {
+		setIsUpdating(true);
+		const response = await apiService.put<Success, { enabled: boolean }>("/users/" + userId, { enabled: !userInfo?.enabled });
+
+		setIsUpdating(false);
+		if (utilService.isSuccess(response)) {
+			setSuccessInfo(response);
+
+			// Update user status
+			setUserInfo({ ...userInfo, enabled: !userInfo?.enabled } as User);
+		} else setErrorInfo(response);
+	};
+
+	const isActive = () => userInfo?.enabled ?? false;
+
 	return (
-		<Page title="User Details" subTitle="View details of a single user" paths={navPaths}>
-			<Tabs value="profile">
-				<TabsHeader className="bg-primary-900">
-					{tabsList.map(({ label, value, icon }) => (
-						<Tab key={value} value={value}>
-							<div className="flex items-center gap-2 font-bold">
-								{icon}
-								{label}
+		<Page title="User Details" subTitle="View details of a single user" paths={navPaths} errorInfo={errorInfo} onCloseErrorDialog={setErrorInfo} isLoading={isLoading}>
+			{/* Success Banner */}
+			<SuccessBanner data={successInfo} actionHandler={handleSuccessActions} entityName="User" actions={successActions} />
+
+			{/* Content Placeholder */}
+			<PagePlaceholder isOpen={utilService.isNull(userInfo)} />
+
+			{userInfo && (
+				<div className="flex gap-5">
+					<Card className="w-96">
+						<CardHeader floated={false} className="h-80">
+							<img src="https://docs.material-tailwind.com/img/team-3.jpg" alt="profile-picture" />
+						</CardHeader>
+						<CardBody className="text-center">
+							<Typography variant="h5" color="blue-gray" className="mb-2">
+								{userInfo.fullName}
+							</Typography>
+							<Typography color="blue-gray" className="font-medium" textGradient>
+								{userInfo.role.name}
+							</Typography>
+						</CardBody>
+						<CardFooter className="flex justify-center gap-7 pt-2">
+							<Button variant="outlined" onClick={() => navigate("../" + userId + "/update")} className=" text-primary-600 border-primary-600">
+								Update
+							</Button>
+							<Button loading={isUpdating} onClick={() => updateUser()} className={`bg-${isActive() ? "secondary" : "primary"}-800`}>
+								{isUpdating ? "Loading..." : isActive() ? "Disable" : "Activate"}
+							</Button>
+						</CardFooter>
+					</Card>
+					<Card className="p-5 w-3/4 flex flex-col gap-10">
+						<div className={rowClasses}>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Full Name: </Typography>
+								<Typography className={valueClasses}>{userInfo.fullName}</Typography>
 							</div>
-						</Tab>
-					))}
-				</TabsHeader>
-				<TabsBody
-					animate={{
-						initial: { y: 250 },
-						mount: { y: 0 },
-						unmount: { y: 250 },
-					}}
-				>
-					{tabsList.map(({ value, content }) => (
-						<TabPanel key={value} value={value}>
-							{content}
-						</TabPanel>
-					))}
-				</TabsBody>
-			</Tabs>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Role: </Typography>
+								<Typography className={valueClasses}>{userInfo.role.name}</Typography>
+							</div>
+						</div>
+						<div className={rowClasses}>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Email: </Typography>
+								<Typography className={valueClasses}>{userInfo.email}</Typography>
+							</div>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Email Verified At: </Typography>
+								<Typography className={valueClasses}>{formatDate(userInfo.emailVerifiedAt)}</Typography>
+							</div>
+						</div>
+						<div className={rowClasses}>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Phone Number: </Typography>
+								<Typography className={valueClasses}>{userInfo.phoneNumber}</Typography>
+							</div>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Phone Verified At: </Typography>
+								<Typography className={valueClasses}>{formatDate(userInfo.phoneVerifiedAt)}</Typography>
+							</div>
+						</div>
+						<div className={rowClasses}>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Gender: </Typography>
+								<Typography className={valueClasses}>{userInfo.gender}</Typography>
+							</div>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Status: </Typography>
+								<Chip
+									variant="ghost"
+									color={isActive() ? "green" : "red"}
+									size="sm"
+									value={isActive() ? "Active" : "Locked"}
+									icon={<span className={`mx-auto mt-1 block h-2 w-2 rounded-full bg-${isActive() ? "green" : "gray"}-900 content-['']`} />}
+								/>
+							</div>
+						</div>
+						<div className={rowClasses}>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Password Changed At: </Typography>
+								<Typography className={valueClasses}>{formatDate(userInfo.passwordChangedAt)}</Typography>
+							</div>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Last Login: </Typography>
+								<Typography className={valueClasses}>{formatDate(userInfo.passwordChangedAt)}</Typography>
+							</div>
+						</div>
+						<div className={rowClasses}>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Created At: </Typography>
+								<Typography className={valueClasses}>{formatDate(userInfo.createdAt)}</Typography>
+							</div>
+							<div className={columnClasses}>
+								<Typography variant={keyVariant}>Last Updated At: </Typography>
+								<Typography className={valueClasses}>{formatDate(userInfo.updatedAt)}</Typography>
+							</div>
+						</div>
+					</Card>
+				</div>
+			)}
 		</Page>
 	);
 };

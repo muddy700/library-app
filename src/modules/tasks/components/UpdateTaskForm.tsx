@@ -23,7 +23,7 @@ export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId, handle
 
 	useEffect(() => {
 		(async () => {
-			const response = await apiService.getById<Task>("/tasks/" + taskId);
+			const response = await apiService.getById<Task>("/tasks", taskId.toString());
 
 			setIsLoading(false);
 

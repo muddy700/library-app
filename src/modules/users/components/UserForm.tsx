@@ -1,8 +1,7 @@
 import { SuccessBanner } from "@lims/shared/components";
-import { Page } from "@lims/shared/layouts";
 import { formService, apiService, utilService, placeholderService } from "@lims/shared/services";
-import { Error, InputOption, NavigationPath, Role, Success, Validation } from "@lims/shared/types";
-import { Button } from "@material-tailwind/react";
+import { Error, InputOption, Role, Success, Validation } from "@lims/shared/types";
+import { Button, Card } from "@material-tailwind/react";
 import { useState, FormEvent, useEffect } from "react";
 import { ZodError } from "zod";
 import { UserDto, UserSchema } from "../schemas";
@@ -10,16 +9,19 @@ import { SelectInput, TextInput } from "@lims/shared/components/form";
 import { useNavigate } from "react-router-dom";
 import { SuccessActionEnum } from "@lims/shared/enums";
 
-export const UserForm = () => {
-	const navPaths: NavigationPath[] = [{ label: "users", url: "/users" }, { label: "create" }];
-
+type FormProps = {
+	onSubmit: (payload: UserDto) => void;
+	isLoading?: boolean;
+	successInfo?: Success;
+	setSuccessInfo: (successInfo?: Success) => void;
+	setErrorInfo: (errorInfo?: Error) => void;
+	initialValues?: UserDto;
+};
+export const UserForm = ({ onSubmit, isLoading = false, setErrorInfo, successInfo, setSuccessInfo, initialValues }: FormProps) => {
 	const [roleOptions, setRoleOptions] = useState<InputOption[]>([]);
 	const [isFetchingRoles, setIsFetchingRoles] = useState<boolean>(true);
-	const [userPayload, setUserPayload] = useState<UserDto>(placeholderService.userForm);
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [userPayload, setUserPayload] = useState<UserDto>(initialValues ?? placeholderService.userForm);
 	const [formErrors, setFormErrors] = useState<Validation[]>([]);
-	const [successInfo, setSuccessInfo] = useState<Success>();
-	const [errorInfo, setErrorInfo] = useState<Error>();
 
 	const genderOptions: InputOption[] = [
 		{ label: "Male", value: "M" },
@@ -39,35 +41,23 @@ export const UserForm = () => {
 		formService.removeInputError(fieldName, formErrors, setFormErrors);
 	};
 
-	const saveUserInfo = async () => {
-		setIsLoading(true);
-		const payload = { ...userPayload, phoneNumber: "255" + userPayload.phoneNumber };
-
-		const response = await apiService.post<Success, UserDto>("/users", payload);
-		setIsLoading(false);
-
-		if (utilService.isSuccess(response)) setSuccessInfo(response);
-		else setErrorInfo(response);
-	};
-
 	const validateForm = (e: FormEvent<HTMLFormElement>): void => {
 		e.preventDefault();
 
 		try {
 			UserSchema.parse(userPayload);
-			saveUserInfo();
+			onSubmit(userPayload);
 		} catch (error) {
 			setFormErrors(formService.extractErrors(error as ZodError));
 		}
 	};
 
 	const handleSuccessActions = (actionId: SuccessActionEnum) => {
-		// View details of the created user
-		if (actionId === VIEW_RESOURCE) navigate("../" + successInfo?.resourceId + "/details");
-		// Clear form
-		else if (actionId === ADD_NEW) setUserPayload(placeholderService.userForm);
+		// View details of the created/updated user
+		if (actionId === VIEW_RESOURCE) navigate(utilService.routes.usersList + "/" + successInfo?.resourceId + "/details");
+		else if (actionId === ADD_NEW) navigate(utilService.routes.createUser);
 		// Show users list
-		else if (actionId === LIST_RESOURCES) navigate("../");
+		else if (actionId === LIST_RESOURCES) navigate(utilService.routes.usersList);
 		else console.log("Success Action Not Found!");
 
 		// Remove Success Banner
@@ -85,34 +75,36 @@ export const UserForm = () => {
 				setRoleOptions(response.items.filter(({ active }) => active).map(({ id, name }) => ({ label: name, value: id } as InputOption)));
 			} else setErrorInfo(response);
 		})();
-	}, []);
+	}, [setErrorInfo]);
 
 	const { roleId, fullName, gender, phoneNumber } = userPayload;
 
 	return (
-		<Page title="User Form" subTitle="Create a new user" paths={navPaths} className="flex justify-center" errorInfo={errorInfo} onCloseErrorDialog={setErrorInfo}>
+		<>
 			{/* Success Banner */}
 			<SuccessBanner data={successInfo} actionHandler={handleSuccessActions} entityName="User" actions={successActions} />
 
-			<form onSubmit={validateForm} className="grid grid-cols-2 gap-8 w-3/5">
-				{/* Full Name */}
-				<TextInput label="Full Name" onChange={onInputChange} getErrorMessage={getErrorMessage} value={fullName} className="col-span-2" />
+			<Card className="w-3/5 p-5">
+				<form onSubmit={validateForm} className="grid grid-cols-2 gap-8">
+					{/* Full Name */}
+					<TextInput label="Full Name" onChange={onInputChange} getErrorMessage={getErrorMessage} value={fullName} className="col-span-2" />
 
-				{/* Email */}
-				<TextInput label="Email" onChange={onInputChange} getErrorMessage={getErrorMessage} value={userPayload.email} />
+					{/* Email */}
+					<TextInput label="Email" onChange={onInputChange} getErrorMessage={getErrorMessage} value={userPayload.email} />
 
-				{/* Phone Number */}
-				<TextInput label="Phone Number" onChange={onInputChange} getErrorMessage={getErrorMessage} value={phoneNumber} />
+					{/* Phone Number */}
+					<TextInput label="Phone Number" onChange={onInputChange} getErrorMessage={getErrorMessage} value={phoneNumber} />
 
-				{/* Role */}
-				<SelectInput label="Role" name="roleId" options={roleOptions} onChange={onSelectionChange} getErrorMessage={getErrorMessage} isLoading={isFetchingRoles} value={roleId} />
+					{/* Role */}
+					<SelectInput label="Role" name="roleId" options={roleOptions} onChange={onSelectionChange} getErrorMessage={getErrorMessage} isLoading={isFetchingRoles} value={roleId} />
 
-				{/* Gender */}
-				<SelectInput label="Gender" options={genderOptions} onChange={onSelectionChange} getErrorMessage={getErrorMessage} value={gender} />
+					{/* Gender */}
+					<SelectInput label="Gender" options={genderOptions} onChange={onSelectionChange} getErrorMessage={getErrorMessage} value={gender} />
 
-				{/* Submit Button */}
-				<Button className="col-span-2 justify-center bg-primary-600" loading={isLoading} type="submit" children={isLoading ? "Saving..." : "Submit"} />
-			</form>
-		</Page>
+					{/* Submit Button */}
+					<Button className="col-span-2 justify-center bg-primary-600" loading={isLoading} type="submit" children={isLoading ? "Saving..." : "Submit"} />
+				</form>
+			</Card>
+		</>
 	);
 };
