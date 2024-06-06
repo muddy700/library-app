@@ -1,38 +1,35 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { Task } from "../types";
-import { Error, Success } from "@lims/shared/types";
+import { IError, Success } from "@lims/shared/types";
 import { UpdateTaskDto } from "../schemas";
 import { DataDrawer } from "@lims/shared/components";
 import { apiService, utilService } from "@lims/shared/services";
 import { Button, Input } from "@material-tailwind/react";
+import { useQuery } from "@tanstack/react-query";
 
 type UpdateTaskFormProps = {
 	toggleVisibility: (value: boolean) => void;
 	handleSuccess: (response: Success) => void;
-	handleFailure: (response: Error) => void;
+	handleFailure: (response: IError) => void;
 	taskId: number;
 };
 
 export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId, handleFailure }: UpdateTaskFormProps) => {
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const { getById, put } = apiService;
+	const { isLoading, data, error } = useQuery({ queryKey: ["todo", taskId], queryFn: () => getById<Task>("/tasks", taskId.toString()) });
+
 	const [isUpdating, setIsUpdating] = useState<boolean>(false);
-	const [taskPayload, setTaskPayload] = useState<UpdateTaskDto>({} as UpdateTaskDto);
+	const [taskPayload, setTaskPayload] = useState<UpdateTaskDto>();
 
 	const title: string = "Task Form";
 	const subTitle: string = "Edit the form below to update Task details.";
 
-	useEffect(() => {
-		(async () => {
-			const response = await apiService.getById<Task>("/tasks", taskId.toString());
+	if (data && !taskPayload) {
+		const { title, maxDuration, published } = data;
+		setTaskPayload({ title, maxDuration, published });
+	}
 
-			setIsLoading(false);
-
-			if (utilService.isValidData(response)) {
-				const { title, maxDuration, published } = response;
-				setTaskPayload({ title, maxDuration, published });
-			}
-		})();
-	}, [taskId]);
+	if (error) handleFailure(error as unknown as IError);
 
 	const handleFormChanges = (e: React.FormEvent<HTMLInputElement>) => {
 		const { name, value } = e.currentTarget;
@@ -40,8 +37,10 @@ export const UpdateTaskForm = ({ toggleVisibility, handleSuccess, taskId, handle
 	};
 
 	const UpdateTaskInfo = async () => {
+		if (!taskPayload) return;
+		
 		setIsUpdating(true);
-		const response = await apiService.put<Success, UpdateTaskDto>("/tasks/" + taskId, { ...taskPayload, published: true });
+		const response = await put<Success, UpdateTaskDto>("/tasks/" + taskId, { ...taskPayload, published: true });
 
 		setIsUpdating(false);
 

@@ -2,6 +2,10 @@ import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom"
 import { BaseLayout } from "./shared/layouts";
 import { AuthModule, DashboardModule, TasksModule, UsersModule } from "./modules";
 import { PageNotFound } from "./shared/components";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+const queryClient = new QueryClient();
 
 const App = () => {
 	const router = createBrowserRouter([
@@ -19,7 +23,12 @@ const App = () => {
 		},
 	]);
 
-	return <RouterProvider router={router} />;
+	return (
+		<QueryClientProvider client={queryClient}>
+			<RouterProvider router={router} />
+			<ReactQueryDevtools initialIsOpen={false} />
+		</QueryClientProvider>
+	);
 };
 
 export default App;

@@ -1,23 +1,34 @@
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import { DialogHeader, Typography, DialogBody, DialogFooter, Button } from "@material-tailwind/react";
-import { Error, Validation } from "../types";
+import { IError, Validation } from "../types";
 import { DataDialog } from "./DataDialog";
 import { variant } from "@material-tailwind/react/types/components/typography";
+import { useState } from "react";
 
 type BannerProps = {
-	data?: Error;
-	onClose?: () => void;
+	data?: IError;
 };
 
-export const ErrorBanner = ({ data, onClose = () => console.log("Error Dialog Closed.") }: BannerProps) => {
+export const ErrorBanner = ({ data }: BannerProps) => {
+	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [lastErrorAt, setLastErrorAt] = useState<number>(0);
+
+	if (!data) return;
+
+	const currentTime = new Date().getMilliseconds();
+
+	if (currentTime > lastErrorAt) {
+		setIsOpen(true);
+		setLastErrorAt(currentTime);
+	}
+
+	// Styles
 	const rowClasses: string = "flex gap-5 border-b-2 py-3";
 	const keyVariant: variant = "h6";
 	const valueClasses: string = "font-normal";
 
-	if (!data) return;
-
 	return (
-		<DataDialog className="flex flex-col items-center border-t-8 border-red-400" size="md">
+		<DataDialog className="flex flex-col items-center border-t-8 border-red-400" size="md" isOpen={isOpen}>
 			<DialogHeader className="flex flex-col text-red-400">
 				<XCircleIcon className="h-20 w-20" />
 				<Typography variant="h4">{data.title}</Typography>
@@ -53,7 +64,7 @@ export const ErrorBanner = ({ data, onClose = () => console.log("Error Dialog Cl
 				)}
 			</DialogBody>
 			<DialogFooter>
-				<Button onClick={() => onClose()} className="bg-secondary-500">
+				<Button onClick={() => setIsOpen(false)} className="bg-secondary-500">
 					Ok
 				</Button>
 			</DialogFooter>

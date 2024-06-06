@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
 import { DataTable } from "@lims/shared/components";
-import { BaseUser, Error, NavigationPath,  TableColumn } from "@lims/shared/types";
-import { apiService, utilService } from "@lims/shared/services";
+import { BaseUser, IError, NavigationPath, TableColumn } from "@lims/shared/types";
+import { apiService } from "@lims/shared/services";
 import { Page } from "@lims/shared/layouts";
 import { useNavigate } from "react-router-dom";
 import { TableActionEnum } from "@lims/shared/enums";
+import { useQuery } from "@tanstack/react-query";
 
 export const UsersList = () => {
-	const [users, setUsers] = useState<BaseUser[]>([]);
-	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [errorInfo, setErrorInfo] = useState<Error>();
+	const { isLoading, data, error } = useQuery({ queryKey: ["users"], queryFn: () => apiService.getWithQuery<BaseUser>("/users", { size: 8 }) });
 
 	const navigate = useNavigate();
 	const { NEW, FILTER, SEARCH, VIEW, UPDATE } = TableActionEnum;
@@ -26,15 +24,7 @@ export const UsersList = () => {
 		{ label: "Status", fieldName: "enabled", dataType: "boolean", options: { valid: "Active", invalid: "Locked" } },
 	];
 
-	useEffect(() => {
-		(async () => {
-			const response = await apiService.getWithQuery<BaseUser>("/users", { size: 8 });
-
-			setIsLoading(false);
-			if (utilService.isPage(response)) setUsers(response.items);
-			else setErrorInfo(response);
-		})();
-	}, []);
+	const getErrorInfo = () => error as unknown as IError;
 
 	const handleTableActions = (actionId: TableActionEnum, data: unknown): void => {
 		const userId = data as string;
@@ -44,8 +34,8 @@ export const UsersList = () => {
 	};
 
 	return (
-		<Page title="Users" subTitle="Manage system users" paths={navPaths} errorInfo={errorInfo} onCloseErrorDialog={setErrorInfo}>
-			<DataTable<BaseUser> columns={tableColumns} data={users} entityName="User" actions={tableActions} actionHandler={handleTableActions} isLoading={isLoading} />
+		<Page title="Users" subTitle="Manage system users" paths={navPaths} errorInfo={getErrorInfo()}>
+			<DataTable<BaseUser> columns={tableColumns} data={data?.items} entityName="User" actions={tableActions} actionHandler={handleTableActions} isLoading={isLoading} />
 		</Page>
 	);
 };

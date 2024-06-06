@@ -1,25 +1,28 @@
 import { SuccessBanner } from "@lims/shared/components";
 import { formService, apiService, utilService, placeholderService } from "@lims/shared/services";
-import { Error, InputOption, Role, Success, Validation } from "@lims/shared/types";
+import { IError, InputOption, Role, Success, Validation } from "@lims/shared/types";
 import { Button, Card } from "@material-tailwind/react";
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent } from "react";
 import { ZodError } from "zod";
 import { UserDto, UserSchema } from "../schemas";
 import { SelectInput, TextInput } from "@lims/shared/components/form";
 import { useNavigate } from "react-router-dom";
 import { SuccessActionEnum } from "@lims/shared/enums";
+import { useQuery } from "@tanstack/react-query";
 
 type FormProps = {
 	onSubmit: (payload: UserDto) => void;
 	isLoading?: boolean;
 	successInfo?: Success;
 	setSuccessInfo: (successInfo?: Success) => void;
-	setErrorInfo: (errorInfo?: Error) => void;
+	setErrorInfo: (errorInfo?: IError) => void;
 	initialValues?: UserDto;
 };
+
 export const UserForm = ({ onSubmit, isLoading = false, setErrorInfo, successInfo, setSuccessInfo, initialValues }: FormProps) => {
+	const { isLoading: isFetchingRoles, data: rolesPage, error } = useQuery({ queryKey: ["roles"], queryFn: () => apiService.getAll<Role>("/roles") });
+
 	const [roleOptions, setRoleOptions] = useState<InputOption[]>([]);
-	const [isFetchingRoles, setIsFetchingRoles] = useState<boolean>(true);
 	const [userPayload, setUserPayload] = useState<UserDto>(initialValues ?? placeholderService.userForm);
 	const [formErrors, setFormErrors] = useState<Validation[]>([]);
 
@@ -64,18 +67,11 @@ export const UserForm = ({ onSubmit, isLoading = false, setErrorInfo, successInf
 		setSuccessInfo(undefined);
 	};
 
+	if (error) setErrorInfo(error as unknown as IError);
+
 	const getErrorMessage = (fieldName: string) => formService.getErrorMessage(fieldName, formErrors);
 
-	useEffect(() => {
-		(async () => {
-			const response = await apiService.getWithQuery<Role>("/roles", { size: 100 });
-
-			setIsFetchingRoles(false);
-			if (utilService.isPage(response)) {
-				setRoleOptions(response.items.filter(({ active }) => active).map(({ id, name }) => ({ label: name, value: id } as InputOption)));
-			} else setErrorInfo(response);
-		})();
-	}, [setErrorInfo]);
+	if (rolesPage && !roleOptions.length) setRoleOptions(rolesPage.items.filter(({ active }) => active).map(({ id, name }) => ({ label: name, value: id } as InputOption)));
 
 	const { roleId, fullName, gender, phoneNumber } = userPayload;
 

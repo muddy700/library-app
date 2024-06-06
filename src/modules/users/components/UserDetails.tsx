@@ -1,19 +1,19 @@
 import { Page } from "@lims/shared/layouts";
-import { Error, NavigationPath, Success, User } from "@lims/shared/types";
-import { useEffect, useState } from "react";
+import { IError, NavigationPath, Success, User } from "@lims/shared/types";
+import { useState } from "react";
 import { apiService, utilService } from "@lims/shared/services";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Typography } from "@material-tailwind/react";
 import { variant } from "@material-tailwind/react/types/components/typography";
 import { PagePlaceholder, SuccessBanner } from "@lims/shared/components";
 import { SuccessActionEnum } from "@lims/shared/enums";
+import { useQuery } from "@tanstack/react-query";
 
 export const UserDetails = () => {
 	const { userId } = useParams();
-	const [userInfo, setUserInfo] = useState<User>();
+	const { isLoading, data: userInfo, error } = useQuery({ queryKey: ["user", userId], queryFn: () => apiService.getById<User>("/users", userId ?? "--") });
+
 	const [successInfo, setSuccessInfo] = useState<Success>();
-	const [errorInfo, setErrorInfo] = useState<Error>();
-	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
 	const navigate = useNavigate();
@@ -28,16 +28,6 @@ export const UserDetails = () => {
 	const valueClasses: string = "font-normal";
 
 	const formatDate = (dt?: string): string => dt?.split("T")[0] ?? "--";
-
-	useEffect(() => {
-		(async () => {
-			const response = await apiService.getById<User>("/users", userId ?? "--");
-			setIsLoading(false);
-
-			if (utilService.isValidData(response)) setUserInfo(response);
-			else setErrorInfo(response);
-		})();
-	}, [userId]);
 
 	const handleSuccessActions = (actionId: SuccessActionEnum) => {
 		// View details of the updated user
@@ -59,16 +49,18 @@ export const UserDetails = () => {
 		setIsUpdating(false);
 		if (utilService.isSuccess(response)) {
 			setSuccessInfo(response);
-
-			// Update user status
-			setUserInfo({ ...userInfo, enabled: !userInfo?.enabled } as User);
-		} else setErrorInfo(response);
+		}
+		// Update user status
+		// setUserInfo({ ...userInfo, enabled: !userInfo?.enabled } as User);
+		// } else setErrorInfo(response);
 	};
 
 	const isActive = () => userInfo?.enabled ?? false;
 
+	const getErrorInfo = () => (error ? (error as unknown as IError) : undefined);
+
 	return (
-		<Page title="User Details" subTitle="View details of a single user" paths={navPaths} errorInfo={errorInfo} onCloseErrorDialog={setErrorInfo} isLoading={isLoading}>
+		<Page title="User Details" subTitle="View details of a single user" paths={navPaths} errorInfo={getErrorInfo()} isLoading={isLoading}>
 			{/* Success Banner */}
 			<SuccessBanner data={successInfo} actionHandler={handleSuccessActions} entityName="User" actions={successActions} />
 
@@ -93,7 +85,7 @@ export const UserDetails = () => {
 							<Button variant="outlined" onClick={() => navigate("../" + userId + "/update")} className=" text-primary-600 border-primary-600">
 								Update
 							</Button>
-							<Button loading={isUpdating} onClick={() => updateUser()} className={`bg-${isActive() ? "secondary" : "primary"}-800`}>
+							<Button loading={isUpdating} onClick={() => updateUser()} className={`${isActive() ? "bg-secondary-800" : "bg-primary-800"}`}>
 								{isUpdating ? "Loading..." : isActive() ? "Disable" : "Activate"}
 							</Button>
 						</CardFooter>
@@ -141,7 +133,7 @@ export const UserDetails = () => {
 									color={isActive() ? "green" : "red"}
 									size="sm"
 									value={isActive() ? "Active" : "Locked"}
-									icon={<span className={`mx-auto mt-1 block h-2 w-2 rounded-full bg-${isActive() ? "green" : "gray"}-900 content-['']`} />}
+									icon={<span className={`mx-auto mt-1 block h-2 w-2 rounded-full ${isActive() ? "bg-green-900" : "bg-red-900"} content-['']`} />}
 								/>
 							</div>
 						</div>

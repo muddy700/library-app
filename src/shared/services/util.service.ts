@@ -1,10 +1,10 @@
-import { Success, Error, Page, PrimaryData } from "../types";
+import { Success, IError, Page, PrimaryData } from "../types";
 
-export const isSuccess = (response: Success | Error): response is Success => "resourceId" in response && "message" in response;
+export const isSuccess = (response: Success | IError): response is Success => "resourceId" in response && "message" in response;
 
-export const isPage = <T>(response: Page<T> | Error): response is Page<T> => "items" in response && "totalItems" in response;
+export const isPage = <T>(response: Page<T> | IError): response is Page<T> => "items" in response && "totalItems" in response;
 
-export const isValidData = <T extends PrimaryData>(response: T | Error): response is T => "id" in response;
+export const isValidData = <T extends PrimaryData>(response: T | IError): response is T => "id" in response;
 
 export const encode = (data: string) => btoa(data);
 

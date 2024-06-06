@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Task } from "../types";
 import { DataDrawer } from "@lims/shared/components";
 import { Success } from "@lims/shared/types";
 import { apiService, utilService } from "@lims/shared/services";
 import { Button } from "@material-tailwind/react";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { useQuery } from "@tanstack/react-query";
 
 type TaskDetailsProps = {
 	taskId: number;
@@ -14,26 +15,18 @@ type TaskDetailsProps = {
 };
 
 export const TaskDetails = ({ taskId, toggleTaskDetails, handleSuccess, onEdit }: TaskDetailsProps) => {
+	const { getById, remove } = apiService;
+	const [isDeleting, setIsDeleting] = useState<boolean>(false);
+	const { isLoading, data: taskInfo } = useQuery({ queryKey: ["todo", taskId], queryFn: () => getById<Task>("/tasks", taskId.toString()) });
+
 	const title: string = "Task Details";
 	const subTitle: string = `Details for Task with ID: ${taskId}`;
 
-	const [taskInfo, setTaskInfo] = useState<Task>();
-	const [isLoading, setIsLoading] = useState<boolean>(true);
-
-	useEffect(() => {
-		(async () => {
-			const response = await apiService.getById<Task>("/tasks", taskId.toString());
-
-			setIsLoading(false);
-			if (utilService.isValidData(response)) setTaskInfo(response);
-		})();
-	}, [taskId]);
-
 	const deleteTask = async () => {
-		setIsLoading(true);
-		const response = await apiService.remove<Success>("/tasks/" + taskId);
+		setIsDeleting(true);
+		const response = await remove<Success>("/tasks/" + taskId);
 
-		setIsLoading(false);
+		setIsDeleting(false);
 
 		if (utilService.isSuccess(response)) {
 			toggleTaskDetails(false);
@@ -47,7 +40,7 @@ export const TaskDetails = ({ taskId, toggleTaskDetails, handleSuccess, onEdit }
 	};
 
 	return (
-		<DataDrawer title={title} subTitle={subTitle} toggleVisibility={toggleTaskDetails} isLoading={isLoading}>
+		<DataDrawer title={title} subTitle={subTitle} toggleVisibility={toggleTaskDetails} isLoading={isDeleting || isLoading}>
 			{/* Task Details */}
 			{taskInfo && (
 				<div className="flex flex-col gap-y-6">

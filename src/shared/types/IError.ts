@@ -1,7 +1,7 @@
 import { Validation } from "./Validation";
 
 // TODO: Remove the optional mark in traceId field
-export interface Error {
+export interface IError {
 	status: number;
 	title: string;
 	traceId: string;

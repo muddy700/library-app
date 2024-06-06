@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Error, Page, QueryParams } from "../types";
+import { IError, Page, QueryParams } from "../types";
 import { authService, dummyDataService, utilService } from ".";
 
 const waitingTime: number = 1000;
@@ -36,7 +36,7 @@ export const getAll = async <T>(endpoint: string) => {
 	try {
 		return (await axiosInstance.get<Page<T>>(endpoint)).data;
 	} catch (error) {
-		return handleError(error);
+		throw handleError(error);
 	}
 };
 
@@ -46,7 +46,7 @@ export const getWithQuery = async <T>(endpoint: string, params: QueryParams) => 
 	try {
 		return (await axiosInstance.get<Page<T>>(endpoint, { params })).data;
 	} catch (error) {
-		return handleError(error);
+		throw handleError(error);
 	}
 };
 
@@ -56,7 +56,7 @@ export const getById = async <T>(endpoint: string, resourceId: string) => {
 	try {
 		return (await axiosInstance.get<T>(endpoint + "/" + resourceId)).data;
 	} catch (error) {
-		return handleError(error);
+		throw handleError(error);
 	}
 };
 
@@ -98,8 +98,8 @@ export const remove = async <T>(endpoint: string) => {
 };
 
 const handleError = (error: unknown) => {
-	let errorInfo: Error = dummyDataService.unknownError;
-	const { request: requestError, response: responseError } = error as AxiosError<Error>;
+	let errorInfo: IError = dummyDataService.unknownError;
+	const { request: requestError, response: responseError } = error as AxiosError<IError>;
 
 	if (responseError) {
 		const { data, status } = responseError;
@@ -122,5 +122,5 @@ const getForbiddenError = (response: AxiosResponse) => {
 		description: "You're not authorized to view this resource(s).",
 		path: "/api/v1" + response.config.url,
 		traceId: "TID-forbidden",
-	} as Error;
+	} as IError;
 };

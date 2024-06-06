@@ -1,5 +1,5 @@
 import { UserDto } from "@lims/modules/users/schemas";
-import { BaseUser, Error, Success, User } from "../types";
+import { BaseUser, IError, Success, User } from "../types";
 import { LoginDto } from "@lims/modules/auth/schemas";
 
 export const initialUsers: BaseUser[] = [
@@ -160,7 +160,7 @@ export const userDetails: User = {
 	updatedAt: "2024-04-29T11:03:18.437+00:00",
 };
 
-export const unknownError: Error = {
+export const unknownError: IError = {
 	status: 400,
 	title: "Unknown Error",
 	traceId: "TID-unknown",

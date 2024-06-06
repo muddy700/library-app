@@ -1,7 +1,7 @@
 import { HomeIcon } from "@heroicons/react/24/solid";
 import { Breadcrumbs, Typography } from "@material-tailwind/react";
 import { ReactNode } from "react";
-import { Error, NavigationPath } from "../types";
+import { IError, NavigationPath } from "../types";
 import { ErrorBanner, Loader, PagePlaceholder } from "../components";
 import { useNavigate } from "react-router-dom";
 
@@ -11,14 +11,12 @@ type PageProps = {
 	paths: NavigationPath[];
 	children: ReactNode;
 	className?: string;
-	errorInfo?: Error;
-	onCloseErrorDialog: (value?: Error) => void;
+	errorInfo?: IError;
 	isLoading?: boolean;
 };
 
-export const Page = ({ title, subTitle, paths, children, className, errorInfo, onCloseErrorDialog, isLoading = false }: PageProps) => {
+export const Page = ({ title, subTitle, paths, children, className, errorInfo, isLoading = false }: PageProps) => {
 	const navigate = useNavigate();
-	const clearErrorInfo = () => onCloseErrorDialog(undefined);
 
 	return (
 		<div className="w-full bg-secondary-200 p-2">
@@ -47,7 +45,7 @@ export const Page = ({ title, subTitle, paths, children, className, errorInfo, o
 			{/* Page Body: Starts */}
 			<div className={"pt-10 " + className}>
 				{/* Error Banner */}
-				<ErrorBanner data={errorInfo} onClose={clearErrorInfo} />
+				<ErrorBanner data={errorInfo} />
 
 				{/* Contents */}
 				{isLoading ? <Loader /> : children ?? <PagePlaceholder />}
