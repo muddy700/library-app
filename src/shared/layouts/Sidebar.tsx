@@ -1,4 +1,4 @@
-import { RectangleGroupIcon, BookOpenIcon, UsersIcon, InboxIcon, Cog6ToothIcon, ChevronDownIcon, PresentationChartBarIcon, RectangleStackIcon, DocumentCheckIcon } from "@heroicons/react/24/outline";
+import { RectangleGroupIcon, BookOpenIcon, UsersIcon, InboxIcon, Cog6ToothIcon, ChevronDownIcon, PresentationChartBarIcon, RectangleStackIcon } from "@heroicons/react/24/outline";
 import { Card, List, ListItem, ListItemPrefix, Accordion, AccordionHeader, Typography, AccordionBody } from "@material-tailwind/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -15,12 +15,6 @@ export const Sidebar = () => {
 						<RectangleGroupIcon className="h-5 w-5" />
 					</ListItemPrefix>
 					Dashboard
-				</ListItem>
-				<ListItem onClick={() => navigate("todos")}>
-					<ListItemPrefix>
-						<DocumentCheckIcon className="h-5 w-5" />
-					</ListItemPrefix>
-					Todos
 				</ListItem>
 				<ListItem onClick={() => navigate("users")}>
 					<ListItemPrefix>

@@ -24,13 +24,14 @@ export const UsersList = () => {
 		{ label: "Status", fieldName: "enabled", dataType: "boolean", options: { valid: "Active", invalid: "Locked" } },
 	];
 
-	const getErrorInfo = () => error as unknown as IError;
+	const getErrorInfo = () => (error ? (error as unknown as IError) : undefined);
 
 	const handleTableActions = (actionId: TableActionEnum, data: unknown): void => {
 		const userId = data as string;
 
 		if (actionId === VIEW) navigate("../" + userId + "/details");
 		else if (actionId === NEW) navigate("../create");
+		else if (actionId === UPDATE) navigate("../" + userId + "/update");
 	};
 
 	return (

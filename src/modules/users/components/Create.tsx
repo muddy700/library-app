@@ -1,30 +1,22 @@
 import { Page } from "@lims/shared/layouts";
 import { UserForm } from ".";
-import { useState } from "react";
 import { UserDto } from "../schemas";
-import { IError, NavigationPath, Success } from "@lims/shared/types";
-import { apiService, utilService } from "@lims/shared/services";
+import { NavigationPath, Success } from "@lims/shared/types";
+import { apiService } from "@lims/shared/services";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@lims/shared/services/util.service";
 
 export const Create = () => {
 	const navPaths: NavigationPath[] = [{ label: "users", url: "/users" }, { label: "create" }];
 
-	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [successInfo, setSuccessInfo] = useState<Success>();
-	const [errorInfo, setErrorInfo] = useState<IError>();
-
-	const saveUserInfo = async (payload: UserDto) => {
-		setIsLoading(true);
-
-		const response = await apiService.post<Success, UserDto>("/users", payload);
-		setIsLoading(false);
-
-		if (utilService.isSuccess(response)) setSuccessInfo(response);
-		else setErrorInfo(response);
-	};
+	const mutation = useMutation({
+		mutationFn: (payload: UserDto) => apiService.post<Success, UserDto>("/users", payload),
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
+	});
 
 	return (
-		<Page title="Create User" subTitle="Create a new user" paths={navPaths} className="flex justify-center" errorInfo={errorInfo} onCloseErrorDialog={setErrorInfo}>
-			<UserForm onSubmit={saveUserInfo} isLoading={isLoading} setErrorInfo={setErrorInfo} setSuccessInfo={setSuccessInfo} successInfo={successInfo} />
+		<Page title="Create User" subTitle="Create a new user" paths={navPaths} className="flex justify-center">
+			<UserForm mutation={mutation} />
 		</Page>
 	);
 };

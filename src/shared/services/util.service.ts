@@ -1,4 +1,7 @@
+import { QueryClient } from "@tanstack/react-query";
 import { Success, IError, Page, PrimaryData } from "../types";
+
+export const queryClient = new QueryClient();
 
 export const isSuccess = (response: Success | IError): response is Success => "resourceId" in response && "message" in response;
 

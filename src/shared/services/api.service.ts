@@ -73,7 +73,7 @@ export const post = async <T, D>(endpoint: string, payload: D) => {
 	try {
 		return (await axiosInstance.post<T, AxiosResponse<T, D>, D>(endpoint, payload)).data;
 	} catch (error) {
-		return handleError(error);
+		throw handleError(error);
 	}
 };
 
@@ -83,7 +83,7 @@ export const put = async <T, D>(endpoint: string, payload: D) => {
 	try {
 		return (await axiosInstance.put<T, AxiosResponse<T, D>, D>(endpoint, payload)).data;
 	} catch (error) {
-		return handleError(error);
+		throw handleError(error);
 	}
 };
 
@@ -93,7 +93,7 @@ export const remove = async <T>(endpoint: string) => {
 	try {
 		return (await axiosInstance.delete<T>(endpoint)).data;
 	} catch (error) {
-		return handleError(error);
+		throw handleError(error);
 	}
 };
 

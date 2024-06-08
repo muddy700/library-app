@@ -1,4 +1,4 @@
-import { SuccessBanner } from "@lims/shared/components";
+import { ErrorBanner, SuccessBanner } from "@lims/shared/components";
 import { formService, apiService, utilService, placeholderService } from "@lims/shared/services";
 import { IError, InputOption, Role, Success, Validation } from "@lims/shared/types";
 import { Button, Card } from "@material-tailwind/react";
@@ -8,21 +8,17 @@ import { UserDto, UserSchema } from "../schemas";
 import { SelectInput, TextInput } from "@lims/shared/components/form";
 import { useNavigate } from "react-router-dom";
 import { SuccessActionEnum } from "@lims/shared/enums";
-import { useQuery } from "@tanstack/react-query";
+import { UseMutationResult, useQuery } from "@tanstack/react-query";
 
 type FormProps = {
-	onSubmit: (payload: UserDto) => void;
-	isLoading?: boolean;
-	successInfo?: Success;
-	setSuccessInfo: (successInfo?: Success) => void;
-	setErrorInfo: (errorInfo?: IError) => void;
 	initialValues?: UserDto;
+	mutation: UseMutationResult<Success, Error, UserDto>;
 };
 
-export const UserForm = ({ onSubmit, isLoading = false, setErrorInfo, successInfo, setSuccessInfo, initialValues }: FormProps) => {
-	const { isLoading: isFetchingRoles, data: rolesPage, error } = useQuery({ queryKey: ["roles"], queryFn: () => apiService.getAll<Role>("/roles") });
+export const UserForm = ({ initialValues, mutation }: FormProps) => {
+	const { mutate, isPending, data: successInfo, error: mutationError } = mutation;
+	const { isLoading: isFetchingRoles, data: rolesPage, error: fetchingError } = useQuery({ queryKey: ["roles"], queryFn: () => apiService.getAll<Role>("/roles") });
 
-	const [roleOptions, setRoleOptions] = useState<InputOption[]>([]);
 	const [userPayload, setUserPayload] = useState<UserDto>(initialValues ?? placeholderService.userForm);
 	const [formErrors, setFormErrors] = useState<Validation[]>([]);
 
@@ -30,6 +26,8 @@ export const UserForm = ({ onSubmit, isLoading = false, setErrorInfo, successInf
 		{ label: "Male", value: "M" },
 		{ label: "Female", value: "F" },
 	];
+
+	const roleOptions = rolesPage ? rolesPage.items.filter(({ active }) => active).map(({ id, name }) => ({ label: name, value: id } as InputOption)) : [];
 
 	const navigate = useNavigate();
 	const { ADD_NEW, VIEW_RESOURCE, LIST_RESOURCES } = SuccessActionEnum;
@@ -49,7 +47,7 @@ export const UserForm = ({ onSubmit, isLoading = false, setErrorInfo, successInf
 
 		try {
 			UserSchema.parse(userPayload);
-			onSubmit(userPayload);
+			mutate(userPayload);
 		} catch (error) {
 			setFormErrors(formService.extractErrors(error as ZodError));
 		}
@@ -58,25 +56,30 @@ export const UserForm = ({ onSubmit, isLoading = false, setErrorInfo, successInf
 	const handleSuccessActions = (actionId: SuccessActionEnum) => {
 		// View details of the created/updated user
 		if (actionId === VIEW_RESOURCE) navigate(utilService.routes.usersList + "/" + successInfo?.resourceId + "/details");
+		// Show user creation form
 		else if (actionId === ADD_NEW) navigate(utilService.routes.createUser);
 		// Show users list
 		else if (actionId === LIST_RESOURCES) navigate(utilService.routes.usersList);
 		else console.log("Success Action Not Found!");
 
-		// Remove Success Banner
-		setSuccessInfo(undefined);
-	};
+		// Clear form
+		setUserPayload(placeholderService.userForm);
 
-	if (error) setErrorInfo(error as unknown as IError);
+		// Reset Mutaton State
+		mutation.reset();
+	};
 
 	const getErrorMessage = (fieldName: string) => formService.getErrorMessage(fieldName, formErrors);
 
-	if (rolesPage && !roleOptions.length) setRoleOptions(rolesPage.items.filter(({ active }) => active).map(({ id, name }) => ({ label: name, value: id } as InputOption)));
+	const getApiError = () => (fetchingError || mutationError ? ((fetchingError || mutationError) as unknown as IError) : undefined);
 
 	const { roleId, fullName, gender, phoneNumber } = userPayload;
 
 	return (
 		<>
+			{/* Error Banner */}
+			<ErrorBanner data={getApiError()} />
+
 			{/* Success Banner */}
 			<SuccessBanner data={successInfo} actionHandler={handleSuccessActions} entityName="User" actions={successActions} />
 
@@ -98,7 +101,7 @@ export const UserForm = ({ onSubmit, isLoading = false, setErrorInfo, successInf
 					<SelectInput label="Gender" options={genderOptions} onChange={onSelectionChange} getErrorMessage={getErrorMessage} value={gender} />
 
 					{/* Submit Button */}
-					<Button className="col-span-2 justify-center bg-primary-600" loading={isLoading} type="submit" children={isLoading ? "Saving..." : "Submit"} />
+					<Button className="col-span-2 justify-center bg-primary-600" loading={isPending} type="submit" children={isPending ? "Saving..." : "Submit"} />
 				</form>
 			</Card>
 		</>

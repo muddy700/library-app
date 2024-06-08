@@ -1,20 +1,20 @@
 import { Page } from "@lims/shared/layouts";
 import { IError, NavigationPath, Success, User } from "@lims/shared/types";
-import { useState } from "react";
 import { apiService, utilService } from "@lims/shared/services";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Typography } from "@material-tailwind/react";
 import { variant } from "@material-tailwind/react/types/components/typography";
 import { PagePlaceholder, SuccessBanner } from "@lims/shared/components";
 import { SuccessActionEnum } from "@lims/shared/enums";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryClient } from "@lims/shared/services/util.service";
+
+type TEnabled = { enabled: boolean };
 
 export const UserDetails = () => {
 	const { userId } = useParams();
-	const { isLoading, data: userInfo, error } = useQuery({ queryKey: ["user", userId], queryFn: () => apiService.getById<User>("/users", userId ?? "--") });
-
-	const [successInfo, setSuccessInfo] = useState<Success>();
-	const [isUpdating, setIsUpdating] = useState<boolean>(false);
+	const { isLoading, data: userInfo, error: fetchingError } = useQuery({ queryKey: ["user", userId], queryFn: () => apiService.getById<User>("/users", userId ?? "--") });
+	const { mutate, isPending, data: response, error: mutationError, reset } = useMutation({ mutationFn: (payload: TEnabled) => apiService.put<Success, TEnabled>("/users/" + userId, payload) });
 
 	const navigate = useNavigate();
 	const navPaths: NavigationPath[] = [{ label: "users", url: "/users" }, { label: "user-details" }];
@@ -38,31 +38,21 @@ export const UserDetails = () => {
 		else if (actionId === LIST_RESOURCES) navigate(utilService.routes.usersList);
 		else console.log("Success Action Not Found!");
 
-		// Remove Success Banner
-		setSuccessInfo(undefined);
+		// Reset the mutation to its initial state
+		reset();
+		queryClient.invalidateQueries({ queryKey: ["user", userId] });
 	};
 
-	const updateUser = async () => {
-		setIsUpdating(true);
-		const response = await apiService.put<Success, { enabled: boolean }>("/users/" + userId, { enabled: !userInfo?.enabled });
-
-		setIsUpdating(false);
-		if (utilService.isSuccess(response)) {
-			setSuccessInfo(response);
-		}
-		// Update user status
-		// setUserInfo({ ...userInfo, enabled: !userInfo?.enabled } as User);
-		// } else setErrorInfo(response);
-	};
+	const updateUser = () => mutate({ enabled: !userInfo?.enabled });
 
 	const isActive = () => userInfo?.enabled ?? false;
 
-	const getErrorInfo = () => (error ? (error as unknown as IError) : undefined);
+	const getApiError = () => (fetchingError || mutationError ? ((fetchingError || mutationError) as unknown as IError) : undefined);
 
 	return (
-		<Page title="User Details" subTitle="View details of a single user" paths={navPaths} errorInfo={getErrorInfo()} isLoading={isLoading}>
+		<Page title="User Details" subTitle="View details of a single user" paths={navPaths} errorInfo={getApiError()} isLoading={isLoading}>
 			{/* Success Banner */}
-			<SuccessBanner data={successInfo} actionHandler={handleSuccessActions} entityName="User" actions={successActions} />
+			<SuccessBanner data={response} actionHandler={handleSuccessActions} entityName="User" actions={successActions} />
 
 			{/* Content Placeholder */}
 			<PagePlaceholder isOpen={utilService.isNull(userInfo)} />
@@ -85,8 +75,8 @@ export const UserDetails = () => {
 							<Button variant="outlined" onClick={() => navigate("../" + userId + "/update")} className=" text-primary-600 border-primary-600">
 								Update
 							</Button>
-							<Button loading={isUpdating} onClick={() => updateUser()} className={`${isActive() ? "bg-secondary-800" : "bg-primary-800"}`}>
-								{isUpdating ? "Loading..." : isActive() ? "Disable" : "Activate"}
+							<Button loading={isPending} onClick={() => updateUser()} className={`${isActive() ? "bg-secondary-800" : "bg-primary-800"}`}>
+								{isPending ? "Loading..." : isActive() ? "Disable" : "Activate"}
 							</Button>
 						</CardFooter>
 					</Card>

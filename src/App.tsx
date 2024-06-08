@@ -1,11 +1,10 @@
 import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { BaseLayout } from "./shared/layouts";
-import { AuthModule, DashboardModule, TasksModule, UsersModule } from "./modules";
+import { AuthModule, DashboardModule, UsersModule } from "./modules";
 import { PageNotFound } from "./shared/components";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-const queryClient = new QueryClient();
+import { queryClient } from "./shared/services/util.service";
 
 const App = () => {
 	const router = createBrowserRouter([
@@ -16,7 +15,6 @@ const App = () => {
 			children: [
 				{ index: true, element: <Navigate to={"dashboard"} /> },
 				{ path: "dashboard/*", element: <DashboardModule /> },
-				{ path: "todos/*", element: <TasksModule /> },
 				{ path: "users/*", element: <UsersModule /> },
 				{ path: "*", element: <PageNotFound /> },
 			],
