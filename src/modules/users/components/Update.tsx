@@ -1,16 +1,17 @@
 import { Page } from "@lims/shared/layouts";
-import { IError, NavigationPath, Success, User } from "@lims/shared/types";
+import { IError, NavigationPath, Success } from "@lims/shared/types";
 import { UserForm } from "./UserForm";
 import { UserDto } from "../schemas";
 import { apiService } from "@lims/shared/services";
 import { useParams } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useUserInfo } from "@lims/shared/hooks";
 
 export const Update = () => {
 	const { userId } = useParams();
 
 	const mutation = useMutation({ mutationFn: (payload: UserDto) => apiService.put<Success, UserDto>("/users/" + userId, payload) });
-	const { isLoading, data, error: fetchingError } = useQuery({ queryKey: ["user", userId], queryFn: () => apiService.getById<User>("/users", userId ?? "--") });
+	const { isLoading, data, error: fetchingError } = useUserInfo(userId ?? "--");
 
 	const navPaths: NavigationPath[] = [{ label: "users", url: "/users" }, { label: "update" }];
 

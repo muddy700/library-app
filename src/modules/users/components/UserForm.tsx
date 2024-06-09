@@ -1,6 +1,6 @@
 import { ErrorBanner, SuccessBanner } from "@lims/shared/components";
-import { formService, apiService, utilService, placeholderService } from "@lims/shared/services";
-import { IError, InputOption, Role, Success, Validation } from "@lims/shared/types";
+import { formService, utilService, placeholderService } from "@lims/shared/services";
+import { IError, InputOption, Success, Validation } from "@lims/shared/types";
 import { Button, Card } from "@material-tailwind/react";
 import { useState, FormEvent } from "react";
 import { ZodError } from "zod";
@@ -8,7 +8,8 @@ import { UserDto, UserSchema } from "../schemas";
 import { SelectInput, TextInput } from "@lims/shared/components/form";
 import { useNavigate } from "react-router-dom";
 import { SuccessActionEnum } from "@lims/shared/enums";
-import { UseMutationResult, useQuery } from "@tanstack/react-query";
+import { UseMutationResult } from "@tanstack/react-query";
+import { useRoles } from "@lims/shared/hooks";
 
 type FormProps = {
 	initialValues?: UserDto;
@@ -17,7 +18,7 @@ type FormProps = {
 
 export const UserForm = ({ initialValues, mutation }: FormProps) => {
 	const { mutate, isPending, data: successInfo, error: mutationError } = mutation;
-	const { isLoading: isFetchingRoles, data: rolesPage, error: fetchingError } = useQuery({ queryKey: ["roles"], queryFn: () => apiService.getAll<Role>("/roles") });
+	const { isLoading: isFetchingRoles, data: rolesPage, error: fetchingError } = useRoles();
 
 	const [userPayload, setUserPayload] = useState<UserDto>(initialValues ?? placeholderService.userForm);
 	const [formErrors, setFormErrors] = useState<Validation[]>([]);

@@ -1,19 +1,20 @@
 import { Page } from "@lims/shared/layouts";
-import { IError, NavigationPath, Success, User } from "@lims/shared/types";
+import { IError, NavigationPath, Success } from "@lims/shared/types";
 import { apiService, utilService } from "@lims/shared/services";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Typography } from "@material-tailwind/react";
 import { variant } from "@material-tailwind/react/types/components/typography";
 import { PagePlaceholder, SuccessBanner } from "@lims/shared/components";
 import { SuccessActionEnum } from "@lims/shared/enums";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@lims/shared/services/util.service";
+import { useUserInfo } from "@lims/shared/hooks";
 
 type TEnabled = { enabled: boolean };
 
 export const UserDetails = () => {
 	const { userId } = useParams();
-	const { isLoading, data: userInfo, error: fetchingError } = useQuery({ queryKey: ["user", userId], queryFn: () => apiService.getById<User>("/users", userId ?? "--") });
+	const { isLoading, data: userInfo, error: fetchingError } = useUserInfo(userId ?? "--");
 	const { mutate, isPending, data: response, error: mutationError, reset } = useMutation({ mutationFn: (payload: TEnabled) => apiService.put<Success, TEnabled>("/users/" + userId, payload) });
 
 	const navigate = useNavigate();
