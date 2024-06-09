@@ -1,6 +1,6 @@
 import { Page } from "@lims/shared/layouts";
 import { IError, NavigationPath, Success } from "@lims/shared/types";
-import { apiService, utilService } from "@lims/shared/services";
+import { apiService, routeService, utilService } from "@lims/shared/services";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Typography } from "@material-tailwind/react";
 import { variant } from "@material-tailwind/react/types/components/typography";
@@ -34,9 +34,9 @@ export const UserDetails = () => {
 		// View details of the updated user
 		if (actionId === VIEW_RESOURCE) navigate("#");
 		// Show user creation form
-		else if (actionId === ADD_NEW) navigate(utilService.routes.createUser);
+		else if (actionId === ADD_NEW) navigate(routeService.users.create);
 		// Show users list
-		else if (actionId === LIST_RESOURCES) navigate(utilService.routes.usersList);
+		else if (actionId === LIST_RESOURCES) navigate(routeService.users.list);
 		else console.log("Success Action Not Found!");
 
 		// Reset the mutation to its initial state
@@ -73,7 +73,7 @@ export const UserDetails = () => {
 							</Typography>
 						</CardBody>
 						<CardFooter className="flex justify-center gap-7 pt-2">
-							<Button variant="outlined" onClick={() => navigate("../" + userId + "/update")} className=" text-primary-600 border-primary-600">
+							<Button variant="outlined" onClick={() => navigate(routeService.users.update(userId ?? "--"))} className=" text-primary-600 border-primary-600">
 								Update
 							</Button>
 							<Button loading={isPending} onClick={() => updateUser()} className={`${isActive() ? "bg-secondary-800" : "bg-primary-800"}`}>

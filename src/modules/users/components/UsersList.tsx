@@ -1,6 +1,6 @@
 import { DataTable } from "@lims/shared/components";
 import { BaseUser, IError, NavigationPath, TableColumn } from "@lims/shared/types";
-import { apiService } from "@lims/shared/services";
+import { apiService, routeService } from "@lims/shared/services";
 import { Page } from "@lims/shared/layouts";
 import { useNavigate } from "react-router-dom";
 import { TableActionEnum } from "@lims/shared/enums";
@@ -29,9 +29,9 @@ export const UsersList = () => {
 	const handleTableActions = (actionId: TableActionEnum, data: unknown): void => {
 		const userId = data as string;
 
-		if (actionId === VIEW) navigate("../" + userId + "/details");
-		else if (actionId === NEW) navigate("../create");
-		else if (actionId === UPDATE) navigate("../" + userId + "/update");
+		if (actionId === VIEW) navigate(routeService.users.details(userId));
+		else if (actionId === NEW) navigate(routeService.users.create);
+		else if (actionId === UPDATE) navigate(routeService.users.update(userId));
 	};
 
 	return (

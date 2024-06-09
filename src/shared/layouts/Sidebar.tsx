@@ -2,6 +2,7 @@ import { RectangleGroupIcon, BookOpenIcon, UsersIcon, InboxIcon, Cog6ToothIcon, 
 import { Card, List, ListItem, ListItemPrefix, Accordion, AccordionHeader, Typography, AccordionBody } from "@material-tailwind/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { routeService } from "../services";
 
 export const Sidebar = () => {
 	const [openReports, setOpenReports] = useState<boolean>(false);
@@ -10,19 +11,19 @@ export const Sidebar = () => {
 	return (
 		<Card className="h-[calc(100vh-3.8rem)] w-full max-w-[15rem] p-2 shadow-xl shadow-primary-900/25 bg-secondary-100">
 			<List>
-				<ListItem onClick={() => navigate("dashboard")}>
+				<ListItem onClick={() => navigate(routeService.dashboard.index)}>
 					<ListItemPrefix>
 						<RectangleGroupIcon className="h-5 w-5" />
 					</ListItemPrefix>
 					Dashboard
 				</ListItem>
-				<ListItem onClick={() => navigate("users")}>
+				<ListItem onClick={() => navigate(routeService.users.list)}>
 					<ListItemPrefix>
 						<UsersIcon className="h-5 w-5" />
 					</ListItemPrefix>
 					Users
 				</ListItem>
-				<ListItem onClick={() => navigate("books")}>
+				<ListItem onClick={() => navigate(routeService.books.list)}>
 					<ListItemPrefix>
 						<BookOpenIcon className="h-5 w-5" />
 					</ListItemPrefix>

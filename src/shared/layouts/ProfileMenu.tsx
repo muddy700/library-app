@@ -2,7 +2,7 @@ import { UserCircleIcon, Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/ou
 import { Menu, MenuHandler, Button, Avatar, MenuList, MenuItem, Typography } from "@material-tailwind/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { storageService, utilService } from "../services";
+import { routeService, storageService, utilService } from "../services";
 
 export const ProfileMenu = () => {
 	const navigate = useNavigate();
@@ -13,7 +13,7 @@ export const ProfileMenu = () => {
 
 	const logout = () => {
 		storageService.remove(utilService.constants.AUTH_INFO);
-		navigate("auth/login");
+		navigate(routeService.auth.login);
 	};
 
 	return (

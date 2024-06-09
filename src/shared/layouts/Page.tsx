@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { IError, NavigationPath } from "../types";
 import { ErrorBanner, Loader, PagePlaceholder } from "../components";
 import { useNavigate } from "react-router-dom";
+import { routeService } from "../services";
 
 type PageProps = {
 	title: string;
@@ -29,7 +30,7 @@ export const Page = ({ title, subTitle, paths, children, className, errorInfo, i
 					</Typography>
 				</div>
 				<Breadcrumbs>
-					<Typography className="opacity-60 text-primary-900" onClick={() => navigate("/dashboard")}>
+					<Typography className="opacity-60 text-primary-900" onClick={() => navigate(routeService.dashboard.index)}>
 						<HomeIcon className="h-4 w-4" />
 					</Typography>
 					{paths.length > 0 &&

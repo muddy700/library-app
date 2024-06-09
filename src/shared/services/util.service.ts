@@ -29,13 +29,6 @@ export const constants = {
 	AUTH_INFO: "AUTH_INFO",
 };
 
-export const routes = {
-	dashboard: "/dashboard",
-	todosList: "/todos",
-	usersList: "/users",
-	createUser: "/users/create",
-};
-
 /**
  * Create: POST => Success ===> resourceId
  * Delete: DELETE => Success ===> resourceId

@@ -6,3 +6,4 @@ export * as dummyDataService from "./dummy-data.service";
 export * as authService from "./auth.service";
 export * as utilService from "./util.service";
 export * as placeholderService from "./placeholder.service";
+export * as routeService from "./route.service";

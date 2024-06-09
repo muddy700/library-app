@@ -1,5 +1,5 @@
 import { ErrorBanner, SuccessBanner } from "@lims/shared/components";
-import { formService, utilService, placeholderService } from "@lims/shared/services";
+import { formService, placeholderService, routeService } from "@lims/shared/services";
 import { IError, InputOption, Success, Validation } from "@lims/shared/types";
 import { Button, Card } from "@material-tailwind/react";
 import { useState, FormEvent } from "react";
@@ -56,11 +56,11 @@ export const UserForm = ({ initialValues, mutation }: FormProps) => {
 
 	const handleSuccessActions = (actionId: SuccessActionEnum) => {
 		// View details of the created/updated user
-		if (actionId === VIEW_RESOURCE) navigate(utilService.routes.usersList + "/" + successInfo?.resourceId + "/details");
+		if (actionId === VIEW_RESOURCE) navigate(routeService.users.details(successInfo?.resourceId ?? "--"));
 		// Show user creation form
-		else if (actionId === ADD_NEW) navigate(utilService.routes.createUser);
+		else if (actionId === ADD_NEW) navigate(routeService.users.create);
 		// Show users list
-		else if (actionId === LIST_RESOURCES) navigate(utilService.routes.usersList);
+		else if (actionId === LIST_RESOURCES) navigate(routeService.users.list);
 		else console.log("Success Action Not Found!");
 
 		// Clear form
