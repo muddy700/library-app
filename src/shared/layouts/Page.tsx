@@ -16,13 +16,13 @@ type PageProps = {
 	isLoading?: boolean;
 };
 
-export const Page = ({ title, subTitle, paths, children, className, errorInfo, isLoading = false }: PageProps) => {
+export const Page = ({ title, subTitle, paths, children, className = "", errorInfo, isLoading = false }: PageProps) => {
 	const navigate = useNavigate();
 
 	return (
-		<div className="w-full bg-secondary-200 p-2">
+		<div className="w-full bg-secondary-200">
 			{/* Page Header: Starts */}
-			<div className="flex justify-between">
+			<div className="p-2 pb-1 flex justify-between items-center shadow-md shadow-primary-900/50">
 				<div className="flex flex-col text-primary-900">
 					<Typography variant="h4">{title}</Typography>
 					<Typography variant="small" className="border-l-4 border-primary-900 ml-1 pl-1 font-normal">
@@ -44,7 +44,7 @@ export const Page = ({ title, subTitle, paths, children, className, errorInfo, i
 			{/* Page Header: Ends */}
 
 			{/* Page Body: Starts */}
-			<div className={"pt-10 " + className}>
+			<div className={"p-2 pt-5 " + className}>
 				{/* Error Banner */}
 				<ErrorBanner data={errorInfo} />
 

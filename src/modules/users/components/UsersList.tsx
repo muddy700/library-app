@@ -7,7 +7,7 @@ import { TableActionEnum } from "@lims/shared/enums";
 import { useQuery } from "@tanstack/react-query";
 
 export const UsersList = () => {
-	const { isLoading, data, error } = useQuery({ queryKey: ["users"], queryFn: () => apiService.getWithQuery<BaseUser>("/users", { size: 8 }) });
+	const { isLoading, data, error } = useQuery({ queryKey: ["users"], queryFn: () => apiService.getWithQuery<BaseUser>("/users", { size: 9 }) });
 
 	const navigate = useNavigate();
 	const { NEW, FILTER, SEARCH, VIEW, UPDATE } = TableActionEnum;
@@ -36,7 +36,7 @@ export const UsersList = () => {
 
 	return (
 		<Page title="Users" subTitle="Manage system users" paths={navPaths} errorInfo={getErrorInfo()}>
-			<DataTable<BaseUser> columns={tableColumns} data={data?.items} entityName="User" actions={tableActions} actionHandler={handleTableActions} isLoading={isLoading} />
+			<DataTable<BaseUser> columns={tableColumns} dataPage={data} entityName="User" actions={tableActions} actionHandler={handleTableActions} isLoading={isLoading} />
 		</Page>
 	);
 };

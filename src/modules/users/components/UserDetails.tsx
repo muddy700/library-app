@@ -2,9 +2,9 @@ import { Page } from "@lims/shared/layouts";
 import { IError, NavigationPath, Success } from "@lims/shared/types";
 import { apiService, routeService, utilService } from "@lims/shared/services";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Typography } from "@material-tailwind/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Typography } from "@material-tailwind/react";
 import { variant } from "@material-tailwind/react/types/components/typography";
-import { PagePlaceholder, SuccessBanner } from "@lims/shared/components";
+import { PagePlaceholder, StatusChip, SuccessBanner } from "@lims/shared/components";
 import { SuccessActionEnum } from "@lims/shared/enums";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@lims/shared/services/util.service";
@@ -119,13 +119,7 @@ export const UserDetails = () => {
 							</div>
 							<div className={columnClasses}>
 								<Typography variant={keyVariant}>Status: </Typography>
-								<Chip
-									variant="ghost"
-									color={isActive() ? "green" : "red"}
-									size="sm"
-									value={isActive() ? "Active" : "Locked"}
-									icon={<span className={`mx-auto mt-1 block h-2 w-2 rounded-full ${isActive() ? "bg-green-900" : "bg-red-900"} content-['']`} />}
-								/>
+								<StatusChip theme={isActive()} value={isActive() ? "Active" : "Locked"} />
 							</div>
 						</div>
 						<div className={rowClasses}>

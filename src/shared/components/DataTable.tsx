@@ -1,16 +1,17 @@
-import { Button, Card, CardBody, CardFooter, Chip, IconButton, Input, Typography } from "@material-tailwind/react";
-import { PrimaryData, TableColumn } from "../types";
+import { Button, Card, CardBody, CardFooter, IconButton, Input, Typography } from "@material-tailwind/react";
+import { Page, PrimaryData, TableColumn } from "../types";
 import { TableHead } from "./TableHead";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import { FunnelIcon, MagnifyingGlassIcon, PencilSquareIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
-import { colors } from "@material-tailwind/react/types/generic";
 import { TableSkeleton } from "./TableSkeleton";
 import { TableActionEnum } from "../enums";
+import { placeholderService } from "../services";
+import { StatusChip } from "./StatusChip";
 
-type TableProps<T> = {
+type TableProps<T extends PrimaryData> = {
 	columns?: TableColumn[];
-	data?: T[];
+	dataPage?: Page<T>;
 	isLoading?: boolean;
 	entityName?: string;
 	hasSerialNumbers?: boolean;
@@ -20,13 +21,14 @@ type TableProps<T> = {
 
 export const DataTable = <T extends PrimaryData>({
 	columns = [],
-	data = [],
+	dataPage = placeholderService.getDataPage(),
 	isLoading = false,
 	entityName = "Entity",
 	hasSerialNumbers = true,
 	actions = [],
 	actionHandler = (actionId: TableActionEnum, data: unknown) => console.log("Table action handler: ", actionId, data),
 }: TableProps<T>) => {
+	const { items } = dataPage;
 	const [searchQuery, setSearchQuery] = useState<string>("");
 
 	const buttonClasses: string = "flex items-center gap-3 text-primary-900 py-2 px-3";
@@ -53,10 +55,6 @@ export const DataTable = <T extends PrimaryData>({
 
 	const getBooleanValue = (column: TableColumn, row: T): string => {
 		return ((row[column.fieldName as never] as boolean) ? column.options?.valid : column.options?.invalid) as string;
-	};
-
-	const getBooleanColor = (column: TableColumn, row: T): colors => {
-		return (row[column.fieldName as never] as boolean) ? "green" : "red";
 	};
 
 	if (isLoading) return <TableSkeleton />;
@@ -100,7 +98,7 @@ export const DataTable = <T extends PrimaryData>({
 						<TableHead hasSerialNumbers={hasSerialNumbers} hasActionsColumn={hasActionsColumn()} columns={columns} />
 						<tbody>
 							{/* Row Placeholder */}
-							{!data.length && (
+							{!items.length && (
 								<tr className="text-center">
 									<td colSpan={getNumberOfColumns()} className="py-4">
 										No data to display.
@@ -108,16 +106,15 @@ export const DataTable = <T extends PrimaryData>({
 								</tr>
 							)}
 
-							{data.length > 0 &&
-								data.map((dataRow: T, rowIndex: number) => {
-									const isLast = rowIndex === data.length - 1;
+							{items.length > 0 &&
+								items.map((dataRow: T, rowIndex: number) => {
+									const isLast = rowIndex === items.length - 1;
 									let tdClasses = "p-4";
 									tdClasses += isLast ? "" : " border-b border-blue-gray-50";
 
 									return (
 										<tr key={rowIndex} className="hover:shadow-xl hover:bg-secondary-200">
 											{columns.map((column: TableColumn, columnIndex: number) => (
-												// TODO: Each child in a list should have a unique "key" prop
 												<React.Fragment key={columnIndex}>
 													{/* S/No column */}
 													{hasSerialNumbers && columnIndex === 0 && (
@@ -134,9 +131,8 @@ export const DataTable = <T extends PrimaryData>({
 															{(column?.dataType === "text" || !column?.dataType) && dataRow[column.fieldName as never]}
 
 															{column.dataType === "date" && (dataRow[column.fieldName as never] as string).split("T")[0]}
-															{column.dataType === "boolean" && (
-																<Chip variant="ghost" size="sm" value={getBooleanValue(column, dataRow)} color={getBooleanColor(column, dataRow)} />
-															)}
+															
+															{column.dataType === "boolean" && <StatusChip value={getBooleanValue(column, dataRow)} theme={dataRow[ column.fieldName as never ]} />}
 														</Typography>
 													</td>
 
@@ -144,8 +140,8 @@ export const DataTable = <T extends PrimaryData>({
 													{hasActionsColumn() && columnIndex === columns.length - 1 && (
 														<td>
 															{isVisible(VIEW) && (
-																<IconButton variant="text" color="indigo" onClick={() => actionHandler(VIEW, dataRow.id)}>
-																	<EyeIcon className="h-5 w-5" />
+																<IconButton variant="text" onClick={() => actionHandler(VIEW, dataRow.id)}>
+																	<EyeIcon className="h-5 w-5 text-primary-700" />
 																</IconButton>
 															)}
 															{isVisible(UPDATE) && (
@@ -168,7 +164,7 @@ export const DataTable = <T extends PrimaryData>({
 						</tbody>
 					</table>
 				</CardBody>
-				<CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
+				<CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 py-1">
 					<Typography variant="small" color="blue-gray" className="font-normal">
 						Page 1 of 10
 					</Typography>

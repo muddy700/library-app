@@ -8,3 +8,4 @@ export { DataDialog } from "./DataDialog";
 export { PageNotFound } from "./PageNotFound";
 export { TableSkeleton } from "./TableSkeleton";
 export { PagePlaceholder } from "./PagePlaceholder";
+export { StatusChip } from "./StatusChip";
