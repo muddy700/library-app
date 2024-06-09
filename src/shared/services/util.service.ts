@@ -1,11 +1,11 @@
 import { QueryClient } from "@tanstack/react-query";
 import { Success, IError, Page, PrimaryData } from "../types";
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } });
 
 export const isSuccess = (response: Success | IError): response is Success => "resourceId" in response && "message" in response;
 
-export const isPage = <T>(response: Page<T> | IError): response is Page<T> => "items" in response && "totalItems" in response;
+export const isPage = <T extends PrimaryData>(response: Page<T> | IError): response is Page<T> => "items" in response && "totalItems" in response;
 
 export const isValidData = <T extends PrimaryData>(response: T | IError): response is T => "id" in response;
 

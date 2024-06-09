@@ -6,13 +6,15 @@ export const dashboard = {
 	index: "/dashboard",
 };
 
-export const users = {
-	create: "/users/create",
-	list: "/users",
-	details: (userId: string) => "/users/" + userId + "/details",
-	update: (userId: string) => "/users/" + userId + "/update",
+const getCommonRoutes = (baseUrl: string) => {
+	return {
+		create: baseUrl + "/create",
+		list: baseUrl,
+		details: (resourceId: string) => baseUrl + "/" + resourceId + "/details",
+		update: (resourceId: string) => baseUrl + "/" + resourceId + "/update",
+	};
 };
 
-export const books = {
-	list: "/books",
-};
+export const users = { ...getCommonRoutes("/users") };
+
+export const books = { ...getCommonRoutes("/books") };

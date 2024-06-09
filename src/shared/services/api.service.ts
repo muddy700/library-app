@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { IError, Page, QueryParams } from "../types";
-import { authService, dummyDataService, utilService } from ".";
+import { IError, Page, PrimaryData, QueryParams } from "../types";
+import { authService, dummyDataService, routeService, storageService, utilService } from ".";
 
 const waitingTime: number = 1000;
 
@@ -30,7 +30,7 @@ type SystemError = {
 	type: string;
 };
 
-export const getAll = async <T>(endpoint: string) => {
+export const getAll = async <T extends PrimaryData>(endpoint: string) => {
 	await utilService.pauseExecution(waitingTime);
 
 	try {
@@ -40,7 +40,7 @@ export const getAll = async <T>(endpoint: string) => {
 	}
 };
 
-export const getWithQuery = async <T>(endpoint: string, params: QueryParams) => {
+export const getWithQuery = async <T extends PrimaryData>(endpoint: string, params: QueryParams) => {
 	await utilService.pauseExecution(waitingTime);
 
 	try {
@@ -104,7 +104,8 @@ const handleError = (error: unknown) => {
 	if (responseError) {
 		const { data, status } = responseError;
 
-		if (utilService.isNull(data) && status === 403) errorInfo = getForbiddenError(responseError);
+		if (status === 403 && data.title === "The token has expired") logOut();
+		else if (utilService.isNull(data) && status === 403) errorInfo = getForbiddenError(responseError);
 		else if (data.timestamp && data.path) errorInfo = { ...data, status };
 		else {
 			const { detail: description, instance: path, title } = data as unknown as SystemError;
@@ -123,4 +124,10 @@ const getForbiddenError = (response: AxiosResponse) => {
 		path: "/api/v1" + response.config.url,
 		traceId: "TID-forbidden",
 	} as IError;
+};
+
+const logOut = () => {
+	storageService.remove(utilService.constants.AUTH_INFO);
+
+	window.location.href = routeService.auth.login;
 };

@@ -8,6 +8,16 @@ export const TopBar = () => {
 	const navigate = useNavigate();
 	const user = authService.getPrincipal();
 
+	const getDisplayName = () => {
+		if (!user) return user;
+
+		const names = user?.fullName.split(" ");
+
+		if (names.length === 1) return names[0];
+
+		return names[0] + " " + names[names.length - 1];
+	};
+
 	return (
 		<div className="bg-primary-900 flex justify-between items-center text-white p-1 pl-6">
 			<div className="w-full max-w-[13.5rem] flex items-center justify-between ">
@@ -28,7 +38,7 @@ export const TopBar = () => {
 				</Badge>
 
 				{/* User name */}
-				<Typography className="ml-5 font-medium">{user?.fullName ?? "Guest User"}</Typography>
+				<Typography className="ml-5 font-medium">{getDisplayName() ?? "Guest User"}</Typography>
 
 				{/* Profile menu */}
 				<ProfileMenu />
