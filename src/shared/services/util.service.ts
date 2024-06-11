@@ -13,6 +13,8 @@ export const encode = (data: string) => btoa(data);
 
 export const decode = (encodedInfo: string) => atob(encodedInfo);
 
+export const formatDate = (value: string) => value.split("T")[0] ?? "--";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isNull = (value: any) => [null, undefined, ""].includes(value);
 

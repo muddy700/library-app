@@ -14,3 +14,4 @@ export type { Role } from "./Role";
 export type { BaseUser } from "./BaseUser";
 export type { User } from "./User";
 export type { InputOption } from "./InputOption";
+export type { MiniUser } from "./MiniUser";

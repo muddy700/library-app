@@ -1,0 +1,1 @@
+export { AuditTrailsList } from "./AuditTrailsList";

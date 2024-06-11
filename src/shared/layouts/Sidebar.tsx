@@ -1,4 +1,4 @@
-import { RectangleGroupIcon, BookOpenIcon, UsersIcon, InboxIcon, Cog6ToothIcon, ChevronDownIcon, PresentationChartBarIcon, RectangleStackIcon } from "@heroicons/react/24/outline";
+import { RectangleGroupIcon, BookOpenIcon, UsersIcon, InboxIcon, ChevronDownIcon, PresentationChartBarIcon, RectangleStackIcon } from "@heroicons/react/24/outline";
 import { Card, List, ListItem, ListItemPrefix, Accordion, AccordionHeader, Typography, AccordionBody } from "@material-tailwind/react";
 import { ReactNode, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -26,7 +26,7 @@ export const Sidebar = () => {
 		{ label: "Users", icon: <UsersIcon className="h-5 w-5" />, route: routeService.users.list },
 		{ label: "Books", icon: <BookOpenIcon className="h-5 w-5" />, route: routeService.books.list },
 		{ label: "Roles", icon: <InboxIcon className="h-5 w-5" />, route: routeService.roles.list },
-		{ label: "Settings", icon: <Cog6ToothIcon className="h-5 w-5" />, route: routeService.settings.index },
+		// { label: "Settings", icon: <Cog6ToothIcon className="h-5 w-5" />, route: routeService.settings.index },
 		{ label: "Audit Trails", icon: <RectangleStackIcon className="h-5 w-5" />, route: routeService.auditTrails.list },
 	];
 

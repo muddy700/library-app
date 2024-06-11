@@ -1,8 +1,6 @@
-import { PrimaryData } from "@lims/shared/types";
+import { MiniUser } from "@lims/shared/types";
 
-export interface BaseUser extends PrimaryData {
-	email: string;
-	fullName: string;
+export interface BaseUser extends MiniUser {
 	phoneNumber: string;
 	gender: string;
 	enabled: boolean;

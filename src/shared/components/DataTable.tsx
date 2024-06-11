@@ -166,7 +166,7 @@ export const DataTable = <T extends PrimaryData>({
 				</CardBody>
 				<CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 py-1">
 					<Typography variant="small" color="blue-gray" className="font-normal">
-						Page {dataPage.currentPage + 1} of {dataPage.totalPages}
+						Page {dataPage.currentPage + 1} of {dataPage.totalPages} from {dataPage.totalItems} records
 					</Typography>
 					<div className="flex gap-3 items-center">
 						<Button variant="outlined" size="sm">
