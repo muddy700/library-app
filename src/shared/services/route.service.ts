@@ -18,3 +18,10 @@ const getCommonRoutes = (baseUrl: string) => {
 export const users = { ...getCommonRoutes("/users") };
 
 export const books = { ...getCommonRoutes("/books") };
+
+// TODO: Remove un-used routes for the module eg.. create and update for audit-trail
+export const roles = { ...getCommonRoutes("/roles") };
+
+export const auditTrails = { ...getCommonRoutes("/audit-trails") };
+
+export const settings = { index: "/settings" };
