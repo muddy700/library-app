@@ -119,7 +119,7 @@ export const DataTable = <T extends PrimaryData>({
 													{/* S/No column */}
 													{hasSerialNumbers && columnIndex === 0 && (
 														<td className={tdClasses}>
-															<Typography variant="small" color="blue-gray" className="font-normal">
+															<Typography variant="small" color="blue-gray" className="pl-2 font-normal">
 																{rowIndex + 1}
 															</Typography>
 														</td>
@@ -128,17 +128,17 @@ export const DataTable = <T extends PrimaryData>({
 													{/* Other columns */}
 													<td className={tdClasses}>
 														<Typography variant="small" color="blue-gray" className="font-normal">
-															{(column?.dataType === "text" || !column?.dataType) && dataRow[column.fieldName as never]}
+															{((column?.dataType === "text" || !column?.dataType) && dataRow[column.fieldName as never]) ?? "--"}
 
 															{column.dataType === "date" && (dataRow[column.fieldName as never] as string).split("T")[0]}
-															
-															{column.dataType === "boolean" && <StatusChip value={getBooleanValue(column, dataRow)} theme={dataRow[ column.fieldName as never ]} />}
+
+															{column.dataType === "boolean" && <StatusChip value={getBooleanValue(column, dataRow)} theme={dataRow[column.fieldName as never]} />}
 														</Typography>
 													</td>
 
 													{/* Actions column */}
 													{hasActionsColumn() && columnIndex === columns.length - 1 && (
-														<td>
+														<td className="text-center">
 															{isVisible(VIEW) && (
 																<IconButton variant="text" onClick={() => actionHandler(VIEW, dataRow.id)}>
 																	<EyeIcon className="h-5 w-5 text-primary-700" />
@@ -166,7 +166,7 @@ export const DataTable = <T extends PrimaryData>({
 				</CardBody>
 				<CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 py-1">
 					<Typography variant="small" color="blue-gray" className="font-normal">
-						Page 1 of 10
+						Page {dataPage.currentPage + 1} of {dataPage.totalPages}
 					</Typography>
 					<div className="flex gap-3 items-center">
 						<Button variant="outlined" size="sm">

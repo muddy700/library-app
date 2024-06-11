@@ -1,6 +1,6 @@
 import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { BaseLayout } from "./shared/layouts";
-import { AuthModule, DashboardModule, UsersModule } from "./modules";
+import { AuthModule, DashboardModule, RolesModule, UsersModule } from "./modules";
 import { PageNotFound } from "./shared/components";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./shared/services/util.service";
@@ -17,6 +17,7 @@ const App = () => {
 				{ path: "dashboard/*", element: <DashboardModule /> },
 				{ path: "users/*", element: <UsersModule /> },
 				{ path: "books/*", element: <BooksModule /> },
+				{ path: "roles/*", element: <RolesModule /> },
 				{ path: "*", element: <PageNotFound /> },
 			],
 		},

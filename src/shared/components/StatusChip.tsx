@@ -12,5 +12,5 @@ export const StatusChip = ({ value = "value", size = "sm", theme = true }: ChipP
 	const color = theme ? "green" : "red";
 	const dotColor = theme ? "bg-green-900" : "bg-red-900";
 
-	return <Chip variant="ghost" color={color} size={size} value={value} icon={<span className={`${dotColor} mx-auto mt-1 block h-2 w-2 rounded-full content-['']`} />} />;
+	return <Chip className="w-max" variant="ghost" color={color} size={size} value={value} icon={<span className={`${dotColor} mx-auto mt-1 block h-2 w-2 rounded-full content-['']`} />} />;
 };

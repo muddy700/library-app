@@ -36,7 +36,7 @@ export const TableHead = ({ hasSerialNumbers, hasActionsColumn, columns }: Table
 
 				{/* Actions column */}
 				{hasActionsColumn && (
-					<th className={thClasses}>
+					<th className={thClasses + " text-center"}>
 						<Typography variant="small" color={headersColor} className={thTypographyClasses}>
 							Actions
 						</Typography>
