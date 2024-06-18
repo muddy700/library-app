@@ -49,7 +49,7 @@ export const Page = ({ title, subTitle, paths, children, className = "", errorIn
 				<ErrorBanner data={errorInfo} />
 
 				{/* Contents */}
-				{isLoading ? <Loader /> : children ?? <PagePlaceholder />}
+				{isLoading ? <Loader className="mt-40" /> : children ?? <PagePlaceholder />}
 			</div>
 			{/* Page Body: Ends */}
 		</div>
