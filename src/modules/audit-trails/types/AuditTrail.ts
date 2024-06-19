@@ -5,5 +5,8 @@ export interface AuditTrail extends CreationData {
 	actorName: string;
 	actorEmail: string;
 	resourceName: string;
+	resourceId: string;
+	previousValues?: string;
+	updatedValues?: string;
 	user: MiniUser;
 }

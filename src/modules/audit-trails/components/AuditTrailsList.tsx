@@ -27,8 +27,8 @@ export const AuditTrailsList = () => {
 	const getErrorInfo = () => (error ? (error as unknown as IError) : undefined);
 
 	const handleTableActions = (actionId: TableActionEnum, data: unknown): void => {
-		const roleId = data as string;
-		if (actionId === VIEW) navigate(routeService.auditTrails.details(roleId));
+		const trailId = data as string;
+		if (actionId === VIEW) navigate(routeService.auditTrails.details(trailId));
 	};
 
 	const getFormattedData = () => {
