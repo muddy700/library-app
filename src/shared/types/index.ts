@@ -15,3 +15,4 @@ export type { BaseUser } from "./BaseUser";
 export type { User } from "./User";
 export type { InputOption } from "./InputOption";
 export type { MiniUser } from "./MiniUser";
+export type { ITab } from "./ITab";

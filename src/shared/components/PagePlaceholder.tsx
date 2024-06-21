@@ -1,7 +1,8 @@
 import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Typography } from "@material-tailwind/react";
 
-type PlaceholderProps = { isOpen?: boolean };
+type PlaceholderProps = { isOpen?: boolean; };
+
 export const PagePlaceholder = ({ isOpen = false }: PlaceholderProps) => {
 	if (!isOpen) return;
 	
