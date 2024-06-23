@@ -4,10 +4,18 @@ import { apiService, routeService } from "@lims/shared/services";
 import { Page } from "@lims/shared/layouts";
 import { useNavigate } from "react-router-dom";
 import { TableActionEnum } from "@lims/shared/enums";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 export const UsersList = () => {
-	const { isLoading, data, error } = useQuery({ queryKey: ["users"], queryFn: () => apiService.getWithQuery<BaseUser>("/users", { size: 9 }) });
+	const [page, setPage] = useState(0);
+	const [size, setSize] = useState(5);
+
+	const { isLoading, isFetching, data, error } = useQuery({
+		queryKey: ["users", { size, page }],
+		queryFn: () => apiService.getWithQuery<BaseUser>("/users", { size, page }),
+		placeholderData: keepPreviousData,
+	});
 
 	const navigate = useNavigate();
 	const { NEW, FILTER, SEARCH, VIEW, UPDATE } = TableActionEnum;
@@ -34,9 +42,24 @@ export const UsersList = () => {
 		else if (actionId === UPDATE) navigate(routeService.users.update(userId));
 	};
 
+	const handlePagination = (value: boolean) => {
+		if (value && data) setPage(data.currentPage + 1);
+		else if (!value && data) setPage(data.currentPage - 1);
+	};
+
 	return (
 		<Page title="Users" subTitle="Manage system users" paths={navPaths} errorInfo={getErrorInfo()}>
-			<DataTable<BaseUser> columns={tableColumns} dataPage={data} entityName="User" actions={tableActions} actionHandler={handleTableActions} isLoading={isLoading} />
+			<DataTable<BaseUser>
+				columns={tableColumns}
+				dataPage={data}
+				entityName="User"
+				actions={tableActions}
+				actionHandler={handleTableActions}
+				isLoading={isLoading}
+				isFetching={isFetching}
+				onPagination={handlePagination}
+				onPageSizeChange={setSize}
+			/>
 		</Page>
 	);
 };

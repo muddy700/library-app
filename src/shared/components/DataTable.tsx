@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, CardFooter, IconButton, Input, Typography } from "@material-tailwind/react";
-import { Page, PrimaryData, TableColumn } from "../types";
+import { InputOption, Page, PrimaryData, TableColumn } from "../types";
 import { TableHead } from "./TableHead";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import { FunnelIcon, MagnifyingGlassIcon, PencilSquareIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
@@ -8,27 +8,34 @@ import { TableSkeleton } from "./TableSkeleton";
 import { TableActionEnum } from "../enums";
 import { placeholderService } from "../services";
 import { StatusChip } from "./StatusChip";
+import { SelectInput } from "./form";
 
 type TableProps<T extends PrimaryData> = {
 	columns?: TableColumn[];
 	dataPage?: Page<T>;
 	isLoading?: boolean;
+	isFetching?: boolean;
 	entityName?: string;
 	hasSerialNumbers?: boolean;
 	actions?: TableActionEnum[];
 	actionHandler?: (actionId: TableActionEnum, data: unknown) => void;
+	onPagination?: (direction: boolean) => void;
+	onPageSizeChange?: (value: number) => void;
 };
 
 export const DataTable = <T extends PrimaryData>({
 	columns = [],
 	dataPage = placeholderService.getDataPage(),
 	isLoading = false,
+	isFetching = false,
 	entityName = "Entity",
 	hasSerialNumbers = true,
 	actions = [],
+	onPagination = (value: boolean) => console.log("Table Pagination: ", value),
+	onPageSizeChange = (value: number) => console.log("Table Page Size: ", value),
 	actionHandler = (actionId: TableActionEnum, data: unknown) => console.log("Table action handler: ", actionId, data),
 }: TableProps<T>) => {
-	const { items } = dataPage;
+	const { items, totalItems, currentPage, totalPages, currentSize } = dataPage;
 	const [searchQuery, setSearchQuery] = useState<string>("");
 
 	const buttonClasses: string = "flex items-center gap-3 text-primary-900 py-2 px-3";
@@ -56,6 +63,20 @@ export const DataTable = <T extends PrimaryData>({
 	const getBooleanValue = (column: TableColumn, row: T): string => {
 		return ((row[column.fieldName as never] as boolean) ? column.options?.valid : column.options?.invalid) as string;
 	};
+
+	const isLastPage = () => currentPage + 1 === totalPages;
+
+	const getSerialNumber = (rowIndex: number) => currentPage * currentSize + rowIndex + 1;
+
+	const onSelectionChange = (fieldName: string, value?: string) => onPageSizeChange(Number(value));
+
+	const sizeOptions: InputOption[] = [
+		{ label: "3", value: "3" },
+		{ label: "5", value: "5" },
+		{ label: "10", value: "10" },
+		{ label: "15", value: "15" },
+		{ label: "20", value: "20" },
+	];
 
 	if (isLoading) return <TableSkeleton />;
 
@@ -120,7 +141,7 @@ export const DataTable = <T extends PrimaryData>({
 													{hasSerialNumbers && columnIndex === 0 && (
 														<td className={tdClasses}>
 															<Typography variant="small" color="blue-gray" className="pl-2 font-normal">
-																{rowIndex + 1}
+																{getSerialNumber(rowIndex)}
 															</Typography>
 														</td>
 													)}
@@ -164,18 +185,27 @@ export const DataTable = <T extends PrimaryData>({
 						</tbody>
 					</table>
 				</CardBody>
-				<CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 py-1">
-					<Typography variant="small" color="blue-gray" className="font-normal">
-						Page {dataPage.currentPage + 1} of {dataPage.totalPages} from {dataPage.totalItems} records
+				<CardFooter className="grid grid-cols-3 items-center border-t border-blue-gray-50 p-4 py-1">
+					<Typography variant="small" color="blue-gray" className="font-semibold text-opacity-75">
+						Page {currentPage + 1} of {totalPages} from {totalItems} rows
 					</Typography>
-					<div className="flex gap-3 items-center">
-						<Button variant="outlined" size="sm">
-							Previous
-						</Button>
-						<Button variant="outlined" size="sm">
-							Next
-						</Button>
+
+					<div className="justify-self-center">
+						<SelectInput disabled={isFetching} label={"Rows"} onChange={onSelectionChange} options={sizeOptions} size="md" value={currentSize.toString()} />
 					</div>
+
+					{isFetching ? (
+						<Button size="sm" className="capitalize bg-primary-900 justify-self-end" loading={isFetching} children="Loading..." />
+					) : (
+						<div className="flex gap-3 items-center justify-self-end">
+							<Button disabled={!currentPage} variant="outlined" size="sm" onClick={() => onPagination(false)}>
+								Previous
+							</Button>
+							<Button disabled={isLastPage()} variant="outlined" size="sm" onClick={() => onPagination(true)}>
+								Next
+							</Button>
+						</div>
+					)}
 				</CardFooter>
 			</Card>
 			{/* Table component: End */}
