@@ -1,6 +1,6 @@
 import { DataTable } from "@lims/shared/components";
-import { BaseUser, IError, NavigationPath, TableColumn } from "@lims/shared/types";
-import { apiService, routeService } from "@lims/shared/services";
+import { BaseUser, IError, NavigationPath, IPage, QueryParams, TableColumn } from "@lims/shared/types";
+import { apiService, placeholderService, routeService } from "@lims/shared/services";
 import { Page } from "@lims/shared/layouts";
 import { useNavigate } from "react-router-dom";
 import { TableActionEnum } from "@lims/shared/enums";
@@ -8,14 +8,10 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 export const UsersList = () => {
-	const [page, setPage] = useState(0);
-	const [size, setSize] = useState(5);
+	const [params, setParams] = useState<QueryParams>(placeholderService.defaultQueryParams);
 
-	const { isLoading, isFetching, data, error } = useQuery({
-		queryKey: ["users", { size, page }],
-		queryFn: () => apiService.getWithQuery<BaseUser>("/users", { size, page }),
-		placeholderData: keepPreviousData,
-	});
+	const queryFn = () => apiService.getWithQuery<BaseUser>("/users", params);
+	const usersQuery = useQuery<IPage<BaseUser>, IError>({ queryKey: ["users", params], queryFn, placeholderData: keepPreviousData });
 
 	const navigate = useNavigate();
 	const { NEW, FILTER, SEARCH, VIEW, UPDATE } = TableActionEnum;
@@ -32,9 +28,7 @@ export const UsersList = () => {
 		{ label: "Status", fieldName: "enabled", dataType: "boolean", options: { valid: "Active", invalid: "Locked" } },
 	];
 
-	const getErrorInfo = () => (error ? (error as unknown as IError) : undefined);
-
-	const handleTableActions = (actionId: TableActionEnum, data: unknown): void => {
+	const tableActionsHandler = (actionId: TableActionEnum, data: unknown): void => {
 		const userId = data as string;
 
 		if (actionId === VIEW) navigate(routeService.users.details(userId));
@@ -42,24 +36,11 @@ export const UsersList = () => {
 		else if (actionId === UPDATE) navigate(routeService.users.update(userId));
 	};
 
-	const handlePagination = (value: boolean) => {
-		if (value && data) setPage(data.currentPage + 1);
-		else if (!value && data) setPage(data.currentPage - 1);
-	};
+	const paginationHandler = (fieldName: string, value: number) => setParams({ ...params, [fieldName]: value });
 
 	return (
-		<Page title="Users" subTitle="Manage system users" paths={navPaths} errorInfo={getErrorInfo()}>
-			<DataTable<BaseUser>
-				columns={tableColumns}
-				dataPage={data}
-				entityName="User"
-				actions={tableActions}
-				actionHandler={handleTableActions}
-				isLoading={isLoading}
-				isFetching={isFetching}
-				onPagination={handlePagination}
-				onPageSizeChange={setSize}
-			/>
+		<Page title="Users" subTitle="Manage system users" paths={navPaths} errorInfo={usersQuery.error}>
+			<DataTable<BaseUser> columns={tableColumns} entityName="User" actions={tableActions} actionHandler={tableActionsHandler} onPagination={paginationHandler} pageQuery={usersQuery} />
 		</Page>
 	);
 };

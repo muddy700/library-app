@@ -12,7 +12,7 @@ type PageProps = {
 	paths: NavigationPath[];
 	children: ReactNode;
 	className?: string;
-	errorInfo?: IError;
+	errorInfo?: IError | null;
 	isLoading?: boolean;
 };
 

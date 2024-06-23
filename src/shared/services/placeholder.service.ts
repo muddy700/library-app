@@ -1,5 +1,5 @@
 import { UserDto } from "@lims/modules/users/schemas";
-import { Page, PrimaryData } from "../types";
+import { IPage, PrimaryData, QueryParams } from "../types";
 
 export const userForm: UserDto = {
 	fullName: "",
@@ -9,4 +9,6 @@ export const userForm: UserDto = {
 	gender: "",
 };
 
-export const getDataPage = <T extends PrimaryData>(): Page<T> => ({ totalItems: 0, currentSize: 0, totalPages: 0, currentPage: 0, items: [] });
+export const getDataPage = <T extends PrimaryData>(): IPage<T> => ({ totalItems: 0, currentSize: 5, totalPages: 0, currentPage: 0, items: [] });
+
+export const defaultQueryParams: QueryParams = { size: 5, page: 0 };

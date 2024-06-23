@@ -1,6 +1,6 @@
 import { PrimaryData } from "./PrimaryData";
 
-export interface Page<T extends PrimaryData> {
+export interface IPage<T extends PrimaryData> {
 	totalItems: number;
 	currentSize: number;
 	totalPages: number;

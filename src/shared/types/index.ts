@@ -1,4 +1,4 @@
-export type { Page } from "./Page";
+export type { IPage } from "./IPage";
 export type { IError } from "./IError";
 export type { Success } from "./Success";
 export type { Validation } from "./Validation";

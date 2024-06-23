@@ -1,7 +1,7 @@
 export { Loader } from "./Loader";
 export { ErrorBanner } from "./ErrorBanner";
 export { SuccessBanner } from "./SuccessBanner";
-export { DataTable } from "./DataTable";
+export { DataTable } from "./table/DataTable";
 export { DataDrawer } from "./DataDrawer";
 export { InputError } from "./InputError";
 export { DataDialog } from "./DataDialog";

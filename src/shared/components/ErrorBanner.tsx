@@ -6,7 +6,7 @@ import { variant } from "@material-tailwind/react/types/components/typography";
 import { useState } from "react";
 
 type BannerProps = {
-	data?: IError;
+	data?: IError | null;
 };
 
 export const ErrorBanner = ({ data }: BannerProps) => {

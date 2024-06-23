@@ -1,5 +1,5 @@
+import { TableColumn } from "@lims/shared/types";
 import { Typography } from "@material-tailwind/react";
-import { TableColumn } from "../types";
 
 type TableHeadProps = {
 	hasSerialNumbers: boolean;
