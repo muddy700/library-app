@@ -1,14 +1,18 @@
 import { TableActionEnum } from "@lims/shared/enums";
-import { IError, NavigationPath, TableColumn } from "@lims/shared/types";
-import { useQuery } from "@tanstack/react-query";
+import { IError, IPage, NavigationPath, QueryParams, TableColumn } from "@lims/shared/types";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Book } from "../types";
-import { apiService, routeService } from "@lims/shared/services";
+import { apiService, placeholderService, routeService } from "@lims/shared/services";
 import { DataTable } from "@lims/shared/components";
 import { Page } from "@lims/shared/layouts";
+import { useState } from "react";
 
 export const BooksList = () => {
-	const { isLoading, data, error } = useQuery({ queryKey: ["books"], queryFn: () => apiService.getWithQuery<Book>("/books", { size: 9 }) });
+	const [params, setParams] = useState<QueryParams>(placeholderService.defaultQueryParams);
+
+	const queryFn = () => apiService.getWithQuery<Book>("/books", params);
+	const booksQuery = useQuery<IPage<Book>, IError>({ queryKey: ["books", params], queryFn, placeholderData: keepPreviousData });
 
 	const navigate = useNavigate();
 	const { NEW, FILTER, SEARCH, VIEW, UPDATE } = TableActionEnum;
@@ -25,9 +29,7 @@ export const BooksList = () => {
 		{ label: "Status", fieldName: "enabled", dataType: "boolean", options: { valid: "Public", invalid: "Private" } },
 	];
 
-	const getErrorInfo = () => (error ? (error as unknown as IError) : undefined);
-
-	const handleTableActions = (actionId: TableActionEnum, data: unknown): void => {
+	const tableActionsHandler = (actionId: TableActionEnum, data: unknown): void => {
 		const bookId = data as string;
 
 		if (actionId === VIEW) navigate(routeService.books.details(bookId));
@@ -35,9 +37,11 @@ export const BooksList = () => {
 		else if (actionId === UPDATE) navigate(routeService.books.update(bookId));
 	};
 
+	const paginationHandler = (fieldName: string, value: number) => setParams({ ...params, [fieldName]: value });
+
 	return (
-		<Page title="Books" subTitle="Manage library books" paths={navPaths} errorInfo={getErrorInfo()}>
-			<DataTable<Book> columns={tableColumns} dataPage={data} entityName="Book" actions={tableActions} actionHandler={handleTableActions} isLoading={isLoading} />
+		<Page title="Books" subTitle="Manage library books" paths={navPaths} errorInfo={booksQuery.error}>
+			<DataTable<Book> columns={tableColumns} pageQuery={booksQuery} entityName="Book" actions={tableActions} actionHandler={tableActionsHandler} onPagination={paginationHandler} />
 		</Page>
 	);
 };

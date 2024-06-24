@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { IError, Page, PrimaryData, QueryParams } from "../types";
+import { IError, IPage, PrimaryData, QueryParams } from "../types";
 import { authService, dummyDataService, routeService, storageService, utilService } from ".";
 
 const waitingTime: number = 1000;
@@ -34,7 +34,7 @@ export const getAll = async <T extends PrimaryData>(endpoint: string) => {
 	await utilService.pauseExecution(waitingTime);
 
 	try {
-		return (await axiosInstance.get<Page<T>>(endpoint)).data;
+		return (await axiosInstance.get<IPage<T>>(endpoint)).data;
 	} catch (error) {
 		throw handleError(error);
 	}
@@ -44,7 +44,7 @@ export const getWithQuery = async <T extends PrimaryData>(endpoint: string, para
 	await utilService.pauseExecution(waitingTime);
 
 	try {
-		return (await axiosInstance.get<Page<T>>(endpoint, { params })).data;
+		return (await axiosInstance.get<IPage<T>>(endpoint, { params })).data;
 	} catch (error) {
 		throw handleError(error);
 	}

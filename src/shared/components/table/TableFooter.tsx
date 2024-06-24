@@ -23,6 +23,8 @@ export const TableFooter = <T extends PrimaryData>({ isFetching, pageInfo, onPag
 		{ label: "20", value: "20" },
 	];
 
+	const isSelectionDisabled = () => isFetching || currentSize >= totalItems;
+
 	return (
 		<CardFooter className="grid grid-cols-3 items-center border-t border-blue-gray-50 p-4 py-1">
 			<Typography variant="small" color="blue-gray" className="font-semibold text-opacity-75">
@@ -30,7 +32,7 @@ export const TableFooter = <T extends PrimaryData>({ isFetching, pageInfo, onPag
 			</Typography>
 
 			<div className="justify-self-center">
-				<SelectInput disabled={isFetching} label={"Rows"} name="size" onChange={onSelectionChange} options={sizeOptions} size="md" value={currentSize.toString()} />
+				<SelectInput disabled={isSelectionDisabled()} label={"Rows"} name="size" onChange={onSelectionChange} options={sizeOptions} size="md" value={currentSize.toString()} />
 			</div>
 
 			{isFetching ? (
