@@ -18,7 +18,7 @@ type FormProps = {
 
 export const UserForm = ({ initialValues, mutation }: FormProps) => {
 	const { mutate, isPending, data: successInfo, error: mutationError } = mutation;
-	const { isLoading: isFetchingRoles, data: rolesPage, error: fetchingError } = useRoles();
+	const { isLoading: isFetchingRoles, data: rolesPage, error: fetchingError } = useRoles(placeholderService.defaultQueryParams);
 
 	const [userPayload, setUserPayload] = useState<UserDto>(initialValues ?? placeholderService.userForm);
 	const [formErrors, setFormErrors] = useState<Validation[]>([]);

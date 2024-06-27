@@ -10,7 +10,8 @@ export interface Book extends BaseData {
 	ratings: number;
 	enabled: boolean;
 
-	description?: string;
-	content?: string;
-	reviews?: Review[];
+	//! The fields below are only avalable through getById()
+	description: string;
+	content: string;
+	reviews: Review[];
 }

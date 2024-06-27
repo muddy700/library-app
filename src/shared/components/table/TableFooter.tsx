@@ -28,7 +28,7 @@ export const TableFooter = <T extends PrimaryData>({ isFetching, pageInfo, onPag
 	return (
 		<CardFooter className="grid grid-cols-3 items-center border-t border-blue-gray-50 p-4 py-1">
 			<Typography variant="small" color="blue-gray" className="font-semibold text-opacity-75">
-				Page {currentPage + 1} of {totalPages} from {totalItems} rows
+				Page {currentPage + 1} of {totalPages} from {totalItems} {totalItems > 1 ? "rows" : "row"}
 			</Typography>
 
 			<div className="justify-self-center">
