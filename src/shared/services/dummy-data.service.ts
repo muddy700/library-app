@@ -94,62 +94,77 @@ export const userDetails: User = {
 			{
 				id: "e959eee0-e4f5-4916-93a7-d14fc5f836a3",
 				description: "Can view Permission(s).",
+				resourceName: "Permission",
 			},
 			{
 				id: "f2ba3c30-1679-4777-9e1d-724dd518c7dd",
 				description: "Can delete Book(s).",
+				resourceName: "Book",
 			},
 			{
 				id: "c5dcc61a-5ca1-48c2-a269-273456af7dac",
 				description: "Can delete User(s).",
+				resourceName: "User",
 			},
 			{
 				id: "ff9a2962-f952-476c-990f-9b4c4eba5170",
 				description: "Can view Book(s).",
+				resourceName: "Book",
 			},
 			{
 				id: "ca727732-f445-4433-9d33-a6c9c72a3465",
 				description: "Can view Role(s).",
+				resourceName: "Role",
 			},
 			{
 				id: "f40ca20a-1dbb-4f91-b30e-9331bfab5a38",
 				description: "Can create Role(s).",
+				resourceName: "Role",
 			},
 			{
 				id: "05b1ed30-9bfe-449e-af44-9b2230800a5c",
 				description: "Can create User(s).",
+				resourceName: "User",
 			},
 			{
 				id: "3b713b55-da81-4f5b-b06c-ba34a86c42be",
 				description: "Can create Book(s).",
+				resourceName: "Book",
 			},
 			{
 				id: "1dcad8fd-c037-4436-9203-3a1571f5546e",
 				description: "Can add and remove  permission(s) to and from the role",
+				resourceName: "Permission",
 			},
 			{
 				id: "2b22f093-ebc0-48be-ba11-f3e2021775a1",
 				description: "Can view User(s).",
+				resourceName: "User",
 			},
 			{
 				id: "2c2383e3-c75a-43bf-ab9d-fa5a03fddf41",
 				description: "Can update User(s).",
+				resourceName: "User",
 			},
 			{
 				id: "2f532465-0639-4b85-845e-e84ffec00c42",
 				description: "Can view AuditTrail(s).",
+				resourceName: "AuditTrail",
 			},
 			{
 				id: "301b1cc8-cce6-47e5-84fc-83f4a68e88ae",
 				description: "Can update Book(s).",
+				resourceName: "Book",
 			},
 			{
 				id: "d5da2248-df15-4a05-924e-f85c1921264c",
 				description: "Can update Role(s).",
+				resourceName: "Role",
 			},
 			{
 				id: "5aea9b86-65e9-4ba4-a0ca-c8a9768acf68",
 				description: "Can delete Role(s).",
+				resourceName: "Role",
 			},
 		],
 		createdAt: "2024-04-25T10:59:04.857+00:00",
@@ -169,7 +184,7 @@ export const unknownError: IError = {
 	timestamp: new Date().toISOString(),
 };
 
-export const loginInfo: LoginDto = { email: "mohamedmfaume700@gmail.com", password: "Pass@12" };
+export const loginInfo: LoginDto = { email: "mohamedmfaume700@gmail.com", password: "Pass@1234" };
 
 export const userForm: UserDto = {
 	fullName: "Magdalena Nchimbi",

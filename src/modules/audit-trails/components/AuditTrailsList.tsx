@@ -33,11 +33,6 @@ export const AuditTrailsList = () => {
 		if (actionId === VIEW) navigate(routeService.auditTrails.details(trailId));
 	};
 
-	const formattedQuery = () => {
-		const { data } = trailsQuery;
-		return !data ? trailsQuery : { ...trailsQuery, data: { ...data, items: data.items.map((item) => ({ ...item, actorName: item.user.fullName, actorEmail: item.user.email })) } };
-	};
-
 	const paginationHandler = (fieldName: string, value: number) => setParams({ ...params, [fieldName]: value });
 
 	return (
@@ -48,7 +43,7 @@ export const AuditTrailsList = () => {
 				actions={tableActions}
 				actionHandler={tableActionsHandler}
 				onPagination={paginationHandler}
-				pageQuery={formattedQuery()}
+				pageQuery={trailsQuery}
 			/>
 		</Page>
 	);

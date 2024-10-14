@@ -4,38 +4,39 @@ import { useNavigate } from "react-router-dom";
 import { LoginDto, LoginSchema } from "../schemas";
 import { apiService, dummyDataService, storageService, utilService } from "@lims/shared/services";
 import { AuthInfo } from "../types";
+import { IError } from "@lims/shared/types";
+import { useMutation } from "@tanstack/react-query";
 
 export const Login = () => {
 	const navigate = useNavigate();
+
 	const [errorMessage, setErrorMessage] = useState<string>("");
-	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [loginPayload, setLoginPayload] = useState<LoginDto>(dummyDataService.loginInfo);
+
+	const { mutate, isPending, data, error: responseError, reset } = useMutation({ mutationFn: (payload: LoginDto) => apiService.post<AuthInfo, LoginDto>("/auth/login", payload) });
 
 	const handleFormChanges = (e: FormEvent<HTMLInputElement>) => {
 		const { name: fieldName, value } = e.currentTarget;
 
+		reset();
 		setErrorMessage("");
+
 		setLoginPayload({ ...loginPayload, [fieldName]: value } as LoginDto);
-	};
-
-	const authenticate = async () => {
-		setIsLoading(true);
-		const response = await apiService.post<AuthInfo, LoginDto>("/auth/login", loginPayload);
-
-		setIsLoading(false);
-
-		if ("token" in response) {
-			storageService.save(utilService.constants.AUTH_INFO, JSON.stringify(response));
-
-			// TODO: Redirect user to where he was before(were going), store location in localStorage
-			navigate("/");
-		} else setErrorMessage(response.description);
 	};
 
 	const validateCredentials = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		LoginSchema.safeParse(loginPayload).success ? authenticate() : setErrorMessage("Invalid credentials");
+		LoginSchema.safeParse(loginPayload).success ? mutate(loginPayload) : setErrorMessage("Invalid username or password");
 	};
+
+	if (responseError && !errorMessage) setErrorMessage((responseError as unknown as IError).description);
+
+	if (data && "token" in data) {
+		storageService.save(utilService.constants.AUTH_INFO, JSON.stringify(data));
+
+		// TODO: Redirect user to where he was before(were going), store location in localStorage
+		navigate("/");
+	}
 
 	const hasError = () => !utilService.isNull(errorMessage);
 
@@ -64,8 +65,8 @@ export const Login = () => {
 					<Input type="password" name="password" label="Password" size="lg" color="teal" value={loginPayload.password} onChange={handleFormChanges} required error={hasError()} />
 
 					<div className="flex flex-col gap-5 mt-10">
-						<Button loading={isLoading} className="bg-primary-900 justify-center capitalize text-sm" type="submit">
-							{isLoading ? "Loading..." : "Log In"}
+						<Button loading={isPending} className="bg-primary-900 justify-center capitalize text-sm" type="submit">
+							{isPending ? "Loading..." : "Log In"}
 						</Button>
 						<Typography variant="small" className="place-self-end text-primary-900 font-normal hover:cursor-pointer">
 							Forgot your password?
