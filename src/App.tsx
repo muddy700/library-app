@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
+import { BaseLayout } from "./shared/layouts";
+import { AuditTrailsModule, AuthModule, DashboardModule, RolesModule, UsersModule } from "./modules";
+import { PageNotFound } from "./shared/components";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./shared/services/util.service";
+import { BooksModule } from "./modules/books/books.module";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+	const router = createBrowserRouter([
+		{ path: "/auth/*", element: <AuthModule /> },
+		{
+			path: "/",
+			element: <BaseLayout />,
+			children: [
+				{ index: true, element: <Navigate to={"dashboard"} /> },
+				{ path: "dashboard/*", element: <DashboardModule /> },
+				{ path: "users/*", element: <UsersModule /> },
+				{ path: "books/*", element: <BooksModule /> },
+				{ path: "roles/*", element: <RolesModule /> },
+				{ path: "audit-trails/*", element: <AuditTrailsModule /> },
+				{ path: "*", element: <PageNotFound /> },
+			],
+		},
+	]);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+	return (
+		<QueryClientProvider client={queryClient}>
+			<RouterProvider router={router} />
+			{/* <ReactQueryDevtools initialIsOpen={false} /> */}
+		</QueryClientProvider>
+	);
+};
 
-export default App
+export default App;
