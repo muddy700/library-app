@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { IError, IPage, PrimaryData, QueryParams } from "../types";
 import { authService, dummyDataService, routeService, storageService, utilService } from ".";
 
-const waitingTime: number = 1000;
+const waitingTime: number = 1;
 
 const defaultConfigs = {
 	baseURL: "/lims-api/v1",

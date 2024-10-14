@@ -9,7 +9,8 @@ export default defineConfig({
 		port: 3000,
 		proxy: {
 			"/lims-api": {
-				target: "http://127.0.0.1:8000",
+				// target: "http://127.0.0.1:8000",
+				target: "http://54.165.109.130:8000",
 				changeOrigin: true,
 				secure: false,
 				rewrite: (path: string) => path.replace(/^\/lims-api/, "api"),
