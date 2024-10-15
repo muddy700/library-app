@@ -1,4 +1,5 @@
-import { User } from "@lims/modules/users/types";
+
+import { User } from "@lims/shared/types";
 
 export interface AuthInfo {
 	token: string;
