@@ -33,8 +33,8 @@ export const Sidebar = () => {
 	return (
 		<Card className="h-[calc(100vh-3.8rem)] w-full max-w-[15rem] shadow-xl shadow-primary-900/25 bg-secondary-100">
 			<List>
-				{sideItems.map(({ label, icon, route }) => (
-					<ListItem onClick={() => navigate(route)} className={isActive(route) ? activeItemStyles : listItemStyles}>
+				{sideItems.map(({ label, icon, route }, index) => (
+					<ListItem onClick={() => navigate(route)} className={isActive(route) ? activeItemStyles : listItemStyles} key={index}>
 						<ListItemPrefix>{icon}</ListItemPrefix>
 						{label}
 					</ListItem>
