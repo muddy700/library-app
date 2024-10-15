@@ -27,6 +27,18 @@ export const getEntityPlural = (entityName: string) => {
 	else return entityName;
 };
 
+export const getTraceId = () => {
+	// Eg ==> TID-2024-0915-1003
+
+	const currentDate = new Date();
+	let traceId = "TID-" + currentDate.getFullYear() + "-";
+
+	traceId += ("0" + (currentDate.getMonth() + 1)).slice(-2) + ("0" + currentDate.getDate()).slice(-2);
+	traceId += "-100" + Math.floor(Math.random() * 9 + 1);
+
+	return traceId;
+};
+
 export const constants = {
 	AUTH_INFO: "AUTH_INFO",
 };

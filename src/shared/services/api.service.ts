@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { IError, IPage, PrimaryData, QueryParams } from "../types";
 import { authService, dummyDataService, routeService, storageService, utilService } from ".";
+import { AuthInfo } from "@lims/modules/auth/types";
 
 const waitingTime: number = 1;
 
@@ -105,6 +106,7 @@ const handleError = (error: unknown) => {
 		const { data, status } = responseError;
 
 		if (status === 403 && data.title === "The token has expired") logOut();
+		else if (status === 403 && utilService.isNull(data) && !storageService.get<AuthInfo>(utilService.constants.AUTH_INFO)) logOut();
 		else if (utilService.isNull(data) && status === 403) errorInfo = getForbiddenError(responseError);
 		else if (data.timestamp && data.path) errorInfo = { ...data, status };
 		else {
@@ -113,7 +115,7 @@ const handleError = (error: unknown) => {
 		}
 	} else console.log("Request Error: ", requestError);
 
-	return errorInfo;
+	return { ...errorInfo, traceId: utilService.getTraceId() };
 };
 
 const getForbiddenError = (response: AxiosResponse) => {
@@ -122,7 +124,7 @@ const getForbiddenError = (response: AxiosResponse) => {
 		title: response.statusText,
 		description: "You're not authorized to view this resource(s).",
 		path: "/api/v1" + response.config.url,
-		traceId: "TID-forbidden",
+		traceId: utilService.getTraceId(),
 	} as IError;
 };
 
