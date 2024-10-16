@@ -41,6 +41,7 @@ export const getTraceId = () => {
 
 export const constants = {
 	AUTH_INFO: "AUTH_INFO",
+	PREVIOUS_LOCATION: "PREVIOUS_LOCATION",
 };
 
 /**

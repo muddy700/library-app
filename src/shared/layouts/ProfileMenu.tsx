@@ -1,20 +1,13 @@
 import { UserCircleIcon, Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/outline";
 import { Menu, MenuHandler, Button, Avatar, MenuList, MenuItem, Typography } from "@material-tailwind/react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { routeService, storageService, utilService } from "../services";
+import { apiService } from "../services";
 
 export const ProfileMenu = () => {
-	const navigate = useNavigate();
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
 	const closeMenu = () => setIsMenuOpen(false);
 	const menuItemClasses: string = "flex items-center gap-2 rounded";
-
-	const logout = () => {
-		storageService.remove(utilService.constants.AUTH_INFO);
-		navigate(routeService.auth.login);
-	};
 
 	return (
 		<Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
@@ -40,7 +33,7 @@ export const ProfileMenu = () => {
 						Edit Profile
 					</Typography>
 				</MenuItem>
-				<MenuItem onClick={() => logout()} className={`group text-red-500 ${menuItemClasses}`}>
+				<MenuItem onClick={() => apiService.logOut()} className={`group text-red-500 ${menuItemClasses}`}>
 					<PowerIcon className="h-4 w-4 text-red-500" strokeWidth={2} />
 					<Typography as="span" variant="small" className="font-normal group-hover:text-red-500">
 						Sign Out

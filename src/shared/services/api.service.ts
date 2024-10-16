@@ -128,8 +128,11 @@ const getForbiddenError = (response: AxiosResponse) => {
 	} as IError;
 };
 
-const logOut = () => {
-	storageService.remove(utilService.constants.AUTH_INFO);
+export const logOut = () => {
+	const { AUTH_INFO, PREVIOUS_LOCATION } = utilService.constants;
+
+	storageService.remove(AUTH_INFO);
+	storageService.save(PREVIOUS_LOCATION, JSON.stringify(window.location.pathname));
 
 	window.location.href = routeService.auth.login;
 };

@@ -32,10 +32,12 @@ export const Login = () => {
 	if (responseError && !errorMessage) setErrorMessage((responseError as unknown as IError).description);
 
 	if (data && "token" in data) {
-		storageService.save(utilService.constants.AUTH_INFO, JSON.stringify(data));
+		const { AUTH_INFO, PREVIOUS_LOCATION } = utilService.constants;
 
-		// TODO: Redirect user to where he was before(were going), store location in localStorage
-		navigate("/");
+		storageService.save(AUTH_INFO, JSON.stringify(data));
+		navigate(storageService.get<string>(PREVIOUS_LOCATION) ?? "/");
+
+		setTimeout(() => storageService.remove(PREVIOUS_LOCATION), 1000);
 	}
 
 	const hasError = () => !utilService.isNull(errorMessage);
