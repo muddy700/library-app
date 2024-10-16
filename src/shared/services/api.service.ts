@@ -105,9 +105,14 @@ const handleError = (error: unknown) => {
 	if (responseError) {
 		const { data, status } = responseError;
 
-		if (status === 403 && data.title === "The token has expired") logOut();
-		else if (status === 403 && utilService.isNull(data) && !storageService.get<AuthInfo>(utilService.constants.AUTH_INFO)) logOut();
-		else if (utilService.isNull(data) && status === 403) errorInfo = getForbiddenError(responseError);
+		const tokenExpired = data.title === "The token has expired";
+		const noResponseData = utilService.isNull(data);
+		const noAuthInfo = !storageService.get<AuthInfo>(utilService.constants.AUTH_INFO);
+
+		if (status === 403 && (tokenExpired || noAuthInfo)) {
+			errorInfo = getCustomError(responseError, 401);
+			setTimeout(() => logOut(), 3000);
+		} else if (noResponseData && status === 403) errorInfo = getCustomError(responseError, 403);
 		else if (data.timestamp && data.path) errorInfo = { ...data, status };
 		else {
 			const { detail: description, instance: path, title } = data as unknown as SystemError;
@@ -118,14 +123,20 @@ const handleError = (error: unknown) => {
 	return { ...errorInfo, traceId: utilService.getTraceId() };
 };
 
-const getForbiddenError = (response: AxiosResponse) => {
+const getCustomError = (response: AxiosResponse, status: number) => {
 	return {
-		status: response.status,
-		title: response.statusText,
-		description: "You're not authorized to view this resource(s).",
+		status,
+		title: status === 401 ? "Unauthorized" : response.statusText,
+		description: getErrorDescription(status),
 		path: "/api/v1" + response.config.url,
 		traceId: utilService.getTraceId(),
 	} as IError;
+};
+
+const getErrorDescription = (statucCode: number) => {
+	if (statucCode === 401) return "Please login first and try again.";
+	else if (statucCode === 403) return "You're not authorized to view this resource(s).";
+	else return "Something went wrong, please contact your System Admin.";
 };
 
 export const logOut = () => {
