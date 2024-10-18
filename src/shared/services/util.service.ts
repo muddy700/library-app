@@ -44,6 +44,20 @@ export const constants = {
 	PREVIOUS_LOCATION: "PREVIOUS_LOCATION",
 };
 
+// TODO: Find a way to parse those variables with as never types
+export const getQueryString = (obj: object, withQuestionMark: boolean) => {
+	let queryString = withQuestionMark ? "?" : "";
+	const fieldsArray = Object.keys(obj);
+
+	fieldsArray.forEach((fieldName, index) => {
+		queryString += fieldName + "=" + obj[fieldName as never];
+
+		if (index < fieldsArray.length - 1) queryString += "&";
+	});
+
+	return queryString;
+};
+
 /**
  * Create: POST => Success ===> resourceId
  * Delete: DELETE => Success ===> resourceId

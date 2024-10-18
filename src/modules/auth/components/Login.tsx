@@ -1,17 +1,23 @@
 import { Button, Card, Chip, Input, Typography } from "@material-tailwind/react";
 import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { LoginDto, LoginSchema } from "../schemas";
-import { apiService, dummyDataService, storageService, utilService } from "@lims/shared/services";
+import { apiService, storageService, utilService } from "@lims/shared/services";
 import { AuthInfo } from "../types";
 import { IError } from "@lims/shared/types";
 import { useMutation } from "@tanstack/react-query";
 
 export const Login = () => {
 	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
+
+	const initialFormData: LoginDto = {
+		email: searchParams.get("email") ?? "",
+		password: "",
+	};
 
 	const [errorMessage, setErrorMessage] = useState<string>("");
-	const [loginPayload, setLoginPayload] = useState<LoginDto>(dummyDataService.loginInfo);
+	const [loginPayload, setLoginPayload] = useState<LoginDto>(initialFormData);
 
 	const { mutate, isPending, data, error: responseError, reset } = useMutation({ mutationFn: (payload: LoginDto) => apiService.post<AuthInfo, LoginDto>("/auth/login", payload) });
 

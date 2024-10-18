@@ -1,5 +1,6 @@
 export const auth = {
 	login: "/auth/login",
+	passwordSetup: "/auth/password-setup",
 };
 
 export const dashboard = {

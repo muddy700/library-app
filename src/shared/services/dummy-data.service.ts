@@ -1,6 +1,7 @@
 import { UserDto } from "@lims/modules/users/schemas";
 import { BaseUser, IError, Success, User } from "../types";
 import { LoginDto } from "@lims/modules/auth/schemas";
+import { EmailVerificationResult } from "@lims/modules/auth/types";
 
 export const initialUsers: BaseUser[] = [
 	{
@@ -195,3 +196,10 @@ export const userForm: UserDto = {
 };
 
 export const successInfo: Success = { message: "User created successfully.", resourceId: "e619159e-9253-4ccd-a71a-308049637430" };
+
+export const emailVerificationResult: EmailVerificationResult = {
+	message: "Your email verified successful.",
+	email: "mohamedmfaume700@gmail.com",
+	token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2hhbWVkbWZhdW1lNzAwQGdtYWlsLmNvbSIsImlhdCI6MTcyOTIzNDI5OSwiZXhwIjoxNzI5MjM2MDk5fQ.mMoFrSaZmBWILw_LErDDhnwSkcCswL8O2HWzlCpG5h0",
+	expiresIn: 1800000,
+};

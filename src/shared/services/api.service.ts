@@ -3,7 +3,7 @@ import { IError, IPage, PrimaryData, QueryParams } from "../types";
 import { authService, dummyDataService, routeService, storageService, utilService } from ".";
 import { AuthInfo } from "@lims/modules/auth/types";
 
-const waitingTime: number = 1;
+const waitingTime: number = 1000;
 
 const defaultConfigs = {
 	baseURL: "/lims-api/v1",
@@ -111,7 +111,7 @@ const handleError = (error: unknown) => {
 
 		if (status === 403 && (tokenExpired || noAuthInfo)) {
 			errorInfo = getCustomError(responseError, 401);
-			setTimeout(() => logOut(), 3000);
+			// setTimeout(() => logOut(), 3000);
 		} else if (noResponseData && status === 403) errorInfo = getCustomError(responseError, 403);
 		else if (data.timestamp && data.path) errorInfo = { ...data, status };
 		else {
